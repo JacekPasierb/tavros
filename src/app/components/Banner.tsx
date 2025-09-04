@@ -29,7 +29,7 @@ export default function Banner() {
       {/* Right video */}
       <div className="relative group">
         <video
-          src="/videos/womens.mp4"
+          src="/videos/film2.mp4"
           autoPlay
           muted
           loop
