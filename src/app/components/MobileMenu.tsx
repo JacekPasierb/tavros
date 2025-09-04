@@ -14,10 +14,12 @@ type PanelItem = {
   label: string;
   href?: string;
   children?: {label: string; href: string}[];
+  special?: boolean;
 };
 
 const PANELS: Record<"MENS" | "WOMENS" | "KIDS", PanelItem[]> = {
   MENS: [
+    {label: "New In", href: "/men/new", special: true},
     {label: "Shop All", href: "/men/all"},
     {label: "Best Sellers", href: "/men/best"},
     {label: "Sale", href: "/men/sale"},
@@ -40,6 +42,7 @@ const PANELS: Record<"MENS" | "WOMENS" | "KIDS", PanelItem[]> = {
     },
   ],
   WOMENS: [
+    {label: "New In", href: "/women/new", special: true},
     {label: "Shop All", href: "/women/all"},
     {label: "Best Sellers", href: "/women/best"},
     {label: "Sale", href: "/women/sale"},
@@ -116,14 +119,14 @@ export default function MobileMenu({open, onClose}: MobileMenuProps) {
         </div>
 
         {/* Panel content */}
-        <div className="overflow-y-auto pb-6">
-          <ul className="px-4">
+        <div className="overflow-y-auto pb-6 ">
+          <ul className="">
             {PANELS[tab].map((it) => (
-              <li key={it.label} className="border-b hover:bg-zinc-100">
+              <li key={it.label} className="border-b">
                 {it.children ? (
-                  <>
+                  <div className="px-4 ">
                     <button
-                      className="flex w-full items-center justify-between py-4 text-[15px] font-medium"
+                      className="flex w-full items-center justify-between py-4 text-[15px] font-medium "
                       onClick={() => toggleSection(it.label)}
                     >
                       {it.label}
@@ -139,7 +142,7 @@ export default function MobileMenu({open, onClose}: MobileMenuProps) {
                           <li key={c.href}>
                             <Link
                               href={c.href}
-                              className="block rounded-md px-2 py-2 text-sm hover:bg-zinc-100"
+                              className="block rounded-md px-2 py-2 text-sm hover:bg-zinc-100 "
                               onClick={onClose}
                             >
                               {c.label}
@@ -148,11 +151,13 @@ export default function MobileMenu({open, onClose}: MobileMenuProps) {
                         ))}
                       </ul>
                     )}
-                  </>
+                  </div>
                 ) : (
                   <Link
                     href={it.href || "#"}
-                    className="flex items-center justify-between py-4 text-[15px] font-medium hover:opacity-80"
+                    className={`flex items-center justify-between px-4 py-4 text-[15px] font-medium hover:opacity-80 ${
+                      it.special ? "bg-black text-white" : ""
+                    }`}
                     onClick={onClose}
                   >
                     {it.label}
