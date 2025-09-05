@@ -29,15 +29,16 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Header />
-           {/* Promo bar */}
-      <div className="grid place-items-center gap-0.5 bg-[#f6f6f6] py-1.5 text-center">
-        <span className="text-[11px] text-black font-semibold tracking-widest">
-          FREE UK EXPRESS DELIVERY
-        </span>
-        <small className="text-[11px] text-gray-700 opacity-70 tracking-widest">
-          ON ORDERS OVER £125
-        </small>
-      </div>
+        {/* Promo bar */}
+        <div className="bg-[#f6f6f6]">
+        <div className="container mx-auto grid place-items-center gap-0.5  py-1.5 text-center">
+          <span className="text-[11px] text-black font-semibold tracking-widest">
+            FREE UK EXPRESS DELIVERY
+          </span>
+          <small className="text-[11px] text-gray-700 opacity-70 tracking-widest">
+            ON ORDERS OVER £125
+          </small>
+        </div></div>
         {children}
       </body>
     </html>

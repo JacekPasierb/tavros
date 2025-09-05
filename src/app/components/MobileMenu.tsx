@@ -19,7 +19,7 @@ type PanelItem = {
 
 const PANELS: Record<"MENS" | "WOMENS" | "KIDS", PanelItem[]> = {
   MENS: [
-    {label: "New In", href: "/men/new", special: true},
+    {label: "New In", href: "/collections/mens-new", special: true},
     {label: "Shop All", href: "/men/all"},
     {label: "Best Sellers", href: "/men/best"},
     {label: "Sale", href: "/men/sale"},
@@ -42,7 +42,7 @@ const PANELS: Record<"MENS" | "WOMENS" | "KIDS", PanelItem[]> = {
     },
   ],
   WOMENS: [
-    {label: "New In", href: "/women/new", special: true},
+    {label: "New In", href: "/collections/womens-new", special: true},
     {label: "Shop All", href: "/women/all"},
     {label: "Best Sellers", href: "/women/best"},
     {label: "Sale", href: "/women/sale"},

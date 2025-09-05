@@ -1,49 +1,108 @@
 "use client";
 
+import {Swiper, SwiperSlide} from "swiper/react";
+import {Navigation, Pagination, A11y} from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 import Link from "next/link";
 
 export default function Banner() {
   return (
-    <section className="grid grid-cols-1 gap-2 md:grid-cols-2">
-      {/* Left video */}
-      <div className="relative group">
+    <section className=" md:grid md:grid-cols-2 ">
+      {/* Mobile swiper */}
+      <div className="md:hidden">
+        <Swiper
+          modules={[Navigation, Pagination, A11y]}
+          spaceBetween={10}
+          slidesPerView={1}
+          pagination={{
+            clickable: true,
+            renderBullet: (index, className) => {
+              // index zaczyna się od 0, więc dodajemy 1
+              const number = (index + 1).toString().padStart(2, "0"); // 01, 02, 03...
+              return `<span class="${className} !bg-transparent !w-auto !h-auto !text-white text-2xl font-bold mx-8 px-3">${number}</span>`;
+            },
+          }}
+        >
+          <SwiperSlide>
+            <div className="relative  overflow-hidden">
+              <video
+                src="/videos/film1.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                className=" w-full object-cover"
+              />{" "}
+              <div className="absolute inset-0 flex items-end mb-15 justify-center">
+                <Link
+                  href="/collections/mens-new"
+                  className="rounded-2xl bg-white px-6 py-2 text-lg font-bold uppercase text-black shadow hover:bg-black hover:text-white transition"
+                >
+                  Mens New
+                </Link>
+              </div>
+            </div>
+          </SwiperSlide>
+          <SwiperSlide>
+            <div className="relative  overflow-hidden">
+              <video
+                src="/videos/film2.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full object-cover"
+              />
+              <div className="absolute inset-0 flex items-end mb-15 justify-center">
+                <Link
+                  href="/collections/womens-new"
+                  className="rounded-2xl bg-white px-6 py-2 text-lg font-bold uppercase text-black shadow hover:bg-black hover:text-white transition"
+                >
+                  Womens New
+                </Link>
+              </div>
+            </div>
+          </SwiperSlide>
+        </Swiper>
+      </div>
+
+      {/* Desktop grid */}
+      <div className="relative hidden  md:block ">
         <video
           src="/videos/film1.mp4"
           autoPlay
           muted
           loop
           playsInline
-          className="h-full w-full object-cover"
+          className="absolute  w-full object-cover"
         />
-        {/* Overlay + CTA */}
-        <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 transition-opacity group-hover:opacity-100">
-          <Link
-            href="/men/new"
-            className="rounded bg-white px-6 py-2 text-sm font-bold uppercase tracking-wider text-black hover:bg-black hover:text-white transition"
-          >
-            Shop Mens
-          </Link>
-        </div>
+         <div className="absolute inset-0 flex items-end mb-20 justify-center">
+    <Link
+      href="/collections/mens-new"
+      className="rounded-2xl bg-white px-6 py-2 text-lg font-bold uppercase text-black shadow hover:bg-black hover:text-white transition"
+    >
+      Mens New
+    </Link>
+  </div>
       </div>
-
-      {/* Right video */}
-      <div className="relative group">
+      <div className=" relative hidden md:block">
         <video
           src="/videos/film2.mp4"
           autoPlay
           muted
           loop
           playsInline
-          className="h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 transition-opacity group-hover:opacity-100">
-          <Link
-            href="/women/new"
-            className="rounded bg-white px-6 py-2 text-sm font-bold uppercase tracking-wider text-black hover:bg-black hover:text-white transition"
-          >
-            Shop Womens
-          </Link>
-        </div>
+          className="w-full object-cover"
+        /> <div className="absolute inset-0 flex items-end mb-20 justify-center">
+        <Link
+          href="/collections/womens-new"
+          className="rounded-2xl bg-white px-6 py-2 text-lg font-bold uppercase text-black shadow hover:bg-black hover:text-white transition"
+        >
+          Womens New
+        </Link>
+      </div>
       </div>
     </section>
   );
