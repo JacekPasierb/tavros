@@ -7,7 +7,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import Link from "next/link";
 
-export default function Banner() {
+const Banner = () => {
   return (
     <section className=" md:grid md:grid-cols-2 ">
       {/* Mobile swiper */}
@@ -78,14 +78,14 @@ export default function Banner() {
           playsInline
           className="absolute  w-full object-cover"
         />
-         <div className="absolute inset-0 flex items-end mb-20 justify-center">
-    <Link
-      href="/collections/mens-new"
-      className="rounded-2xl bg-white px-6 py-2 text-lg font-bold uppercase text-black shadow hover:bg-black hover:text-white transition"
-    >
-      Mens New
-    </Link>
-  </div>
+        <div className="absolute inset-0 flex items-end mb-20 justify-center">
+          <Link
+            href="/collections/mens-new"
+            className="rounded-2xl bg-white px-6 py-2 text-lg font-bold uppercase text-black shadow hover:bg-black hover:text-white transition"
+          >
+            Mens New
+          </Link>
+        </div>
       </div>
       <div className=" relative hidden md:block">
         <video
@@ -95,15 +95,18 @@ export default function Banner() {
           loop
           playsInline
           className="w-full object-cover"
-        /> <div className="absolute inset-0 flex items-end mb-20 justify-center">
-        <Link
-          href="/collections/womens-new"
-          className="rounded-2xl bg-white px-6 py-2 text-lg font-bold uppercase text-black shadow hover:bg-black hover:text-white transition"
-        >
-          Womens New
-        </Link>
-      </div>
+        />{" "}
+        <div className="absolute inset-0 flex items-end mb-20 justify-center">
+          <Link
+            href="/collections/womens-new"
+            className="rounded-2xl bg-white px-6 py-2 text-lg font-bold uppercase text-black shadow hover:bg-black hover:text-white transition"
+          >
+            Womens New
+          </Link>
+        </div>
       </div>
     </section>
   );
-}
+};
+
+export default Banner;

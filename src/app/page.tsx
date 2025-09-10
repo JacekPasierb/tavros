@@ -1,11 +1,13 @@
-import Banner from "./components/Banner";
-import CategoryAndReco from "./components/CategoryAndReco";
+import Banner from "./sections/Banner";
+import Products from "./sections/Products";
 
-export default function Home() {
+const Home = () => {
   return (
-   <main>
-    <Banner />
-    <CategoryAndReco/>
-   </main>
+    <main>
+      <Banner />
+      <Products />
+    </main>
   );
-}
+};
+
+export default Home;

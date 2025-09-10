@@ -75,7 +75,7 @@ const PANELS: Record<"MENS" | "WOMENS" | "KIDS", PanelItem[]> = {
   ],
 };
 
-export default function MobileMenu({open, onClose}: MobileMenuProps) {
+const MobileMenu = ({open, onClose}: MobileMenuProps) => {
   const [tab, setTab] = useState<"MENS" | "WOMENS" | "KIDS">("MENS");
   const [expanded, setExpanded] = useState<string | null>(null);
 
@@ -214,4 +214,6 @@ export default function MobileMenu({open, onClose}: MobileMenuProps) {
       </aside>
     </>
   );
-}
+};
+
+export default MobileMenu;

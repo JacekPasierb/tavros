@@ -3,7 +3,7 @@
 import {Heart, Menu, Search, ShoppingBag} from "lucide-react";
 import Link from "next/link";
 import React, {useState} from "react";
-import MobileMenu from "../MobileMenu";
+import MobileMenu from "./MobileMenu";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
