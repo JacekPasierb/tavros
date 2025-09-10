@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import {useState} from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart } from "lucide-react"; // 👈 ikona serca
+import {Heart} from "lucide-react";
 
 export type ProductCardProps = {
   label: string;
@@ -12,11 +12,11 @@ export type ProductCardProps = {
   price: string;
 };
 
-const ProductCard = ({ label, href, img, price }: ProductCardProps) => {
+const ProductCard = ({label, href, img, price}: ProductCardProps) => {
   const [fav, setFav] = useState(false);
 
   const toggleFav = (e: React.MouseEvent) => {
-    e.preventDefault(); // 👈 żeby kliknięcie serduszka nie otwierało linka
+    e.preventDefault();
     setFav((prev) => !prev);
   };
 
@@ -26,7 +26,6 @@ const ProductCard = ({ label, href, img, price }: ProductCardProps) => {
       className="block rounded-lg border bg-white transition hover:shadow"
     >
       <div className="relative aspect-[4/5] w-full overflow-hidden rounded-t-lg">
-        {/* Obrazek */}
         <Image
           src={img}
           alt={label}
@@ -35,7 +34,6 @@ const ProductCard = ({ label, href, img, price }: ProductCardProps) => {
           className="object-cover"
         />
 
-        {/* Serduszko w rogu */}
         <button
           onClick={toggleFav}
           className="absolute top-2 right-2 rounded-full bg-white/80 p-1 hover:bg-white shadow"
@@ -49,7 +47,6 @@ const ProductCard = ({ label, href, img, price }: ProductCardProps) => {
         </button>
       </div>
 
-      {/* Opis */}
       <div className="p-3">
         <p className="text-sm">{label}</p>
         <p className="text-sm font-bold">{price}</p>
