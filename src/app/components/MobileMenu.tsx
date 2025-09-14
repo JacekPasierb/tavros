@@ -194,14 +194,14 @@ const MobileMenu = ({open, onClose}: MobileMenuProps) => {
               </span>
               <div className="flex gap-4 text-sm">
                 <Link
-                  href="/register"
+                  href="/account/register"
                   onClick={onClose}
                   className="hover:underline"
                 >
                   Create Account
                 </Link>
                 <Link
-                  href="/login"
+                  href="/account/signin"
                   onClick={onClose}
                   className="hover:underline"
                 >

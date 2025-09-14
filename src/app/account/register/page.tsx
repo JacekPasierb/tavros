@@ -1,7 +1,9 @@
 "use client";
 
 import {ErrorMessage, Field, Form, Formik} from "formik";
+import {useRouter} from "next/navigation";
 import React from "react";
+import * as Yup from "yup";
 
 interface FormValues {
   firstName: string;
@@ -11,7 +13,9 @@ interface FormValues {
   marketingOptIn: boolean;
 }
 
-const page = () => {
+const RegisterPage = () => {
+  const router = useRouter();
+
   const initialValues: FormValues = {
     firstName: "",
     lastName: "",
@@ -20,28 +24,44 @@ const page = () => {
     marketingOptIn: false,
   };
 
+  const RegisterSchema = Yup.object({
+    firstName: Yup.string().min(2).required(),
+    lastName: Yup.string().min(2).required(),
+    email: Yup.string().email().required(),
+    password: Yup.string().min(8, "Min 8 znaków").required(),
+    marketingOptIn: Yup.boolean(),
+  });
+
   const handleSubmit = async (values: FormValues) => {
     try {
       const res = await fetch("/api/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify(values),
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to register");
+      if (res.status === 201) {
+        // opcja B: jak wolisz – przekieruj na /login z komunikatem
+        router.push("/account/login?registered=1");
+      } else if (res.status === 409) {
+        alert("Ten email jest już zajęty.");
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert(data?.message || "Nie udało się utworzyć konta.");
       }
-
-      const data = await res.json();
-      console.log("Registered ✅", data);
     } catch (err) {
       console.error(err);
+      alert("Błąd sieci. Spróbuj ponownie.");
     }
   };
 
   return (
     <section className="container mx-auto py-2">
-      <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={RegisterSchema}
+        onSubmit={handleSubmit}
+      >
         {({isSubmitting}) => (
           <Form className="max-w-md mx-auto space-y-4 p-6  rounded-lg bg-white ">
             <h1 className="text-2xl font-bold text-center">Register</h1>
@@ -139,4 +159,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default RegisterPage;
