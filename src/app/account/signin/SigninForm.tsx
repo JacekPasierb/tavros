@@ -67,7 +67,7 @@ export default function SignInForm() {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium">Password</label>
-              <Field type="password" name="password" className="mt-1 w-full rounded border p-2" />
+              <Field type="password" name="password" autoComplete="current-password" className="mt-1 w-full rounded border p-2" />
               <ErrorMessage name="password" component="div" className="text-sm text-red-500" />
             </div>
 
