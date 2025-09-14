@@ -1,6 +1,6 @@
 "use client";
 
-import {Heart, Menu, Search, ShoppingBag} from "lucide-react";
+import {Heart, Menu, Search, ShoppingBag, User} from "lucide-react";
 import Link from "next/link";
 import React, {useState} from "react";
 import MobileMenu from "./MobileMenu";
@@ -37,19 +37,27 @@ const Header = () => {
           aria-label="Header actions"
         >
           <Link
-            href="/wishlist"
-            aria-label="Wishlist"
-            className="grid h-9 w-9 place-items-center"
-          >
-            <Heart className="h-6 w-6" />
-          </Link>
-          <Link
             href="/search"
             aria-label="Search"
             className="grid h-9 w-9 place-items-center"
           >
             <Search className="h-6 w-6" />
           </Link>
+          <Link
+            href="/account/myaccount"
+            aria-label="My account"
+            className="grid h-9 w-9 place-items-center"
+          >
+            <User className="h-6 w-6" />
+          </Link>
+          <Link
+            href="/account/favorites"
+            aria-label="Wishlist"
+            className="grid h-9 w-9 place-items-center"
+          >
+            <Heart className="h-6 w-6" />
+          </Link>
+
           <Link
             href="/cart"
             aria-label="Cart"

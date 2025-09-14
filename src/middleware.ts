@@ -19,9 +19,21 @@ export default withAuth(
         if (!token) {
           const url = new URL("/account/signin", req.url);
           url.searchParams.set("callbackUrl",  pathname + search);
+          url.searchParams.set("reason", "myaccount");
           return NextResponse.redirect(url);
         }
       }
+
+       // --- /account/favorites tylko dla zalogowanych ---
+    if (pathname.startsWith("/account/favorites")) {
+      if (!token) {
+        const url = new URL("/account/signin", req.url);
+        url.searchParams.set("callbackUrl", pathname + search);
+        url.searchParams.set("reason", "favorites");
+        return NextResponse.redirect(url);
+      }
+    }
+
     return NextResponse.next();
   },
   {

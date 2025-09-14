@@ -14,6 +14,8 @@ export default function SignInForm() {
   const router = useRouter();
   const search = useSearchParams();
   const callbackUrl = search.get("callbackUrl") || "/account/myaccount";
+ 
+  const reason = search.get("reason");
 
   const initialValues: FormValues = { email: "", password: "" };
 
@@ -58,7 +60,16 @@ export default function SignInForm() {
         {({ isSubmitting }) => (
           <Form className="max-w-md mx-auto space-y-4 p-6 rounded-lg bg-white">
             <h1 className="text-2xl font-bold text-center">Login</h1>
-
+{reason === "favorites" && (
+        <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
+          Dostęp do ulubionych wymaga zalogowania. Zaloguj się, aby zobaczyć swoją listę.
+        </div>
+      )}
+      {reason === "myaccount" && (
+        <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
+          Dostęp do konta wymaga zalogowania. Zaloguj się.
+        </div>
+      )}
             <div>
               <label htmlFor="email" className="block text-sm font-medium">Email</label>
               <Field type="email" name="email" className="mt-1 w-full rounded border p-2" />
