@@ -3,16 +3,16 @@ type Cat = {label: string; href: string; img: string};
 export const DATA = {
     MENS: {
       collections: [
-        {label: "Twin Sets", href: "/collections/twin-sets", img: "/photo.webp"},
-        {label: "Gymwear", href: "/collections/gymwear", img: "/photo.webp"},
+        {label: "Christmas 2.0", href: "/collections/christmas20", img: "/photo.webp"},
+        {label: "Street Essence", href: "/collections/street_essence", img: "/photo.webp"},
         {
-          label: "Tracksuits",
-          href: "/collections/tracksuits",
+          label: "Black and White",
+          href: "/collections/black_and_white",
           img: "/photo.webp",
         },
         {
-          label: "T-Shirts",
-          href: "/collections/mens-tshirts",
+          label: "Retro Vibe",
+          href: "/collections/retro_vibe",
           img: "/photo.webp",
         },
       ] as Cat[],
