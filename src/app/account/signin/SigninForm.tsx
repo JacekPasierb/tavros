@@ -70,6 +70,11 @@ export default function SignInForm() {
           Dostęp do konta wymaga zalogowania. Zaloguj się.
         </div>
       )}
+      {reason === "1" && (
+        <div className="mb-4 rounded-md border border-green-300 bg-green-50 p-3 text-sm text-green-800">
+         Rejestracja przebiegła poprawnie. Możesz się zalogować.
+        </div>
+      )}
             <div>
               <label htmlFor="email" className="block text-sm font-medium">Email</label>
               <Field type="email" name="email" className="mt-1 w-full rounded border p-2" />

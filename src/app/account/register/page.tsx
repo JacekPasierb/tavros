@@ -42,7 +42,7 @@ const RegisterPage = () => {
 
       if (res.status === 201) {
         // opcja B: jak wolisz – przekieruj na /login z komunikatem
-        router.push("/account/login?registered=1");
+        router.push("/account/signin?reason=1");
       } else if (res.status === 409) {
         alert("Ten email jest już zajęty.");
       } else {
