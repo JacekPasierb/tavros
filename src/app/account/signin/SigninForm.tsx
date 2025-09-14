@@ -13,7 +13,7 @@ interface FormValues {
 export default function SignInForm() {
   const router = useRouter();
   const search = useSearchParams();
-  const callbackUrl = search.get("callbackUrl") || "/account";
+  const callbackUrl = search.get("callbackUrl") || "/account/myaccount";
 
   const initialValues: FormValues = { email: "", password: "" };
 
