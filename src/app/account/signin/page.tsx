@@ -1,8 +1,8 @@
 "use client";
 
 import {ErrorMessage, Field, Form, Formik} from "formik";
-import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import {signIn} from "next-auth/react";
+import {useRouter, useSearchParams} from "next/navigation";
 
 import React from "react";
 import * as Yup from "yup";
@@ -13,8 +13,7 @@ interface FormValues {
 }
 
 const SigninPage = () => {
-
-    const router = useRouter();
+  const router = useRouter();
   const search = useSearchParams();
 
   const callbackUrl = search.get("callbackUrl") || "/account";
@@ -29,7 +28,10 @@ const SigninPage = () => {
     password: Yup.string().min(8, "Min 8 znaków").required("Wymagane"),
   });
 
-  const handleSubmit = async (values: FormValues, { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }) => {
+  const handleSubmit = async (
+    values: FormValues,
+    {setSubmitting}: {setSubmitting: (isSubmitting: boolean) => void}
+  ) => {
     try {
       const res = await signIn("credentials", {
         email: values.email,
