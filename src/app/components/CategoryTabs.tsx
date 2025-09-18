@@ -1,5 +1,5 @@
 "use client";
-type Tab = "MENS" | "WOMENS";
+type Tab = "MENS" | "WOMENS" | "KIDS";
 
 const CategoryTabs = ({
   active,
@@ -14,7 +14,7 @@ const CategoryTabs = ({
     <div className={`sticky ${top} z-30 border-b bg-white/90 backdrop-blur`}>
       <div className="container mx-auto px-4">
         <div className="flex justify-center gap-6 py-3 text-lg font-semibold uppercase">
-          {(["MENS", "WOMENS"] as const).map((t) => (
+          {(["MENS", "WOMENS", "KIDS"] as const).map((t) => (
             <button
               key={t}
               onClick={() => onChange(t)}

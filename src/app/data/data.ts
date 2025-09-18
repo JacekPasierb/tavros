@@ -9,7 +9,7 @@ export const DATA = {
           label: "Black and White",
           href: "/collections/black_and_white",
           img: "/photo.webp",
-        },
+        },  
         {
           label: "Retro Vibe",
           href: "/collections/retro_vibe",
@@ -81,4 +81,43 @@ export const DATA = {
         },
       ],
     },
+    KIDS: {
+      collections: [
+        {label: "Tops", href: "/collections/tops", img: "/photo1.webp"},
+        {label: "Leggings", href: "/collections/leggings", img: "/photo1.webp"},
+        {label: "Outerwear", href: "/collections/outerwear", img: "/photo1.webp"},
+        {
+          label: "T-Shirts",
+          href: "/collections/women-tshirts",
+          img: "/photo1.webp",
+        },
+      ] as Cat[],
+      recommended: [
+        {
+          label: "Seamless Set",
+          href: "/women/p/seamless-set",
+          img: "/photo1.webp",
+          price: "150 GBP",
+        },
+        {
+          label: "Crop Hoodie",
+          href: "/women/p/crop-hoodie",
+          img: "/photo1.webp",
+          price: "150 GBP",
+        },
+        {
+          label: "Lite Leggings",
+          href: "/women/p/lite-leggings",
+          img: "/photo1.webp",
+          price: "150 GBP",
+        },
+        {
+          label: "Windbreaker",
+          href: "/women/p/windbreaker",
+          img: "/photo1.webp",
+          price: "150 GBP",
+        },
+      ],
+    },
+  
   };
