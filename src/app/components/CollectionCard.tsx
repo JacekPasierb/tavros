@@ -8,8 +8,6 @@ export type CollectionCardProps = {
 };
 
 const CollectionCard = ({label, href, img}: CollectionCardProps) => {
-  console.log("href",href);
-  
   return (
     <Link
       href={href}

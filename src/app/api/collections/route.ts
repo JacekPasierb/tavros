@@ -15,8 +15,6 @@ export async function GET(req: Request) {
     href: `/collections/${r.slug}`,
     img: r.heroImage,
   }));
-  
-  console.log("it", items);
 
   return Response.json({items});
 }

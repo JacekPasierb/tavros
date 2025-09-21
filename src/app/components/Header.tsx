@@ -4,6 +4,7 @@ import {Heart, Menu, Search, ShoppingBag, User} from "lucide-react";
 import Link from "next/link";
 import React, {useState} from "react";
 import MobileMenu from "./MobileMenu";
+import Image from "next/image";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
@@ -24,12 +25,20 @@ const Header = () => {
 
         {/* Logo */}
         <Link
-          href="/"
-          className="justify-self-center text-[20px] tracking-[0.6em] text-zinc-900 lg:text-[22px]"
-          aria-label="Brand home"
-        >
-          TAVROS
-        </Link>
+      href="/"
+      className="justify-self-center flex items-center gap-2 text-zinc-900"
+      aria-label="Brand home"
+    >
+      <Image
+        src="/icons/logo.svg"
+        alt="Tavros logo"
+        width={32}
+        height={32}
+         className="h-8 w-8 md:h-10 md:w-10 lg:h-12 lg:w-12"
+        priority
+      />
+      <span className="text-[20px] tracking-[0.6em] lg:text-[22px]">TAVROS</span>
+    </Link>
 
         {/* Right actions */}
         <nav
