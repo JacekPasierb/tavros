@@ -1,6 +1,6 @@
 "use client";
 
-import {Heart, Menu, Search, ShoppingBag, User} from "lucide-react";
+import {Heart, Menu, ShoppingBag, User} from "lucide-react";
 import Link from "next/link";
 import React, {useState} from "react";
 import MobileMenu from "./MobileMenu";
@@ -25,33 +25,28 @@ const Header = () => {
 
         {/* Logo */}
         <Link
-      href="/"
-      className="justify-self-center flex items-center gap-2 text-zinc-900"
-      aria-label="Brand home"
-    >
-      <Image
-        src="/icons/logo.svg"
-        alt="Tavros logo"
-        width={32}
-        height={32}
-         className="h-8 w-8 md:h-10 md:w-10 lg:h-12 lg:w-12"
-        priority
-      />
-      <span className="text-[20px] tracking-[0.6em] lg:text-[22px]">TAVROS</span>
-    </Link>
+          href="/"
+          className="justify-self-center flex items-center gap-2 text-zinc-900"
+          aria-label="Brand home"
+        >
+          <Image
+            src="/icons/logo.svg"
+            alt="Tavros logo"
+            width={32}
+            height={32}
+            className="h-8 w-8 md:h-10 md:w-10 lg:h-12 lg:w-12"
+            priority
+          />
+          <span className="text-[20px] tracking-[0.6em] lg:text-[22px]">
+            TAVROS
+          </span>
+        </Link>
 
         {/* Right actions */}
         <nav
           className="flex gap-1 justify-self-end"
           aria-label="Header actions"
         >
-          <Link
-            href="/search"
-            aria-label="Search"
-            className="grid h-9 w-9 place-items-center"
-          >
-            <Search className="h-6 w-6" />
-          </Link>
           <Link
             href="/account/myaccount"
             aria-label="My account"
