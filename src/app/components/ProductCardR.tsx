@@ -9,7 +9,7 @@ export type ProductCardProps = {
   label: string;
   href: string;
   img: string;
-  price: string;
+  price: number;
 };
 
 const ProductCard = ({label, href, img, price}: ProductCardProps) => {
