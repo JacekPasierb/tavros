@@ -1,7 +1,8 @@
 // app/api/collections/[slug]/products/route.ts
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "../../../../../lib/mongodb";
-import Product from "../../../../../models/Product";
+import Product, { ProductDoc } from "../../../../../models/Product";
+import { FilterQuery } from "mongoose";
 
 
 export const dynamic = "force-dynamic";
@@ -20,8 +21,7 @@ export async function GET(req: Request, ctx: Ctx) {
     const onlyInStock = searchParams.get("inStock") === "true";
 
     // Filtr bazowy po kolekcji
-    const where: any = { collectionSlug: slug };
-
+    const where: FilterQuery<ProductDoc> = { collectionSlug: slug };
     // Filtr po rozmiarach (wariantach)
     if (sizes.length) {
       where["variants"] = { $elemMatch: { size: { $in: sizes } } };
@@ -35,7 +35,7 @@ export async function GET(req: Request, ctx: Ctx) {
     }
 
     // Sortowanie
-    const sortMap: Record<string, any> = {
+    const sortMap: Record<string, Record<string, 1 | -1>> = {
       newest: { createdAt: -1 },
       price_asc: { price: 1 },
       price_desc: { price: -1 },
