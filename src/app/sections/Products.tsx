@@ -22,6 +22,9 @@ const Products = () => {
     fetcher,
     { keepPreviousData: true }
   );
+  
+  console.log("Da",colData);
+  
   const collections = colData?.items ?? [];
   return (
     <section className="w-full">

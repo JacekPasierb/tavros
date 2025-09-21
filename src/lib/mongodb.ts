@@ -2,8 +2,6 @@ import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.MONGO_URI!;
 
-console.log("mongo", MONGODB_URI);
-
 if (!MONGODB_URI) {
   throw new Error("⚠️ Brakuje zmiennej środowiskowej MONGODB_URI");
 }
