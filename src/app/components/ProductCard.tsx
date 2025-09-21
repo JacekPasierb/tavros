@@ -1,58 +1,59 @@
-"use client";
+import { Heart } from 'lucide-react';
+import React, { useState } from 'react'
 
-import {useState} from "react";
-import Image from "next/image";
-import Link from "next/link";
-import {Heart} from "lucide-react";
-
-export type ProductCardProps = {
-  label: string;
-  href: string;
-  img: string;
-  price: string;
-};
-
-const ProductCard = ({label, href, img, price}: ProductCardProps) => {
-  const [fav, setFav] = useState(false);
-
-  const toggleFav = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setFav((prev) => !prev);
+export type Product = {
+    _id: string;
+    title: string;
+    price: number;
+    images?: string[];
+    inStock?: boolean;
   };
 
-  return (
-    <Link
-      href={href}
-      className="block rounded-lg border bg-white transition hover:shadow"
-    >
-      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-t-lg">
-        <Image
-          src={img}
-          alt={label}
-          fill
-          sizes="224px"
-          className="object-cover"
-        />
-
-        <button
-          onClick={toggleFav}
-          className="absolute top-2 right-2 rounded-full bg-white/80 p-1 hover:bg-white shadow"
-          aria-label="Add to wishlist"
-        >
-          <Heart
-            className={`h-5 w-5 ${
-              fav ? "fill-red-500 text-red-500" : "text-zinc-700"
-            }`}
+const ProductCard = ({product}: {product: Product}) =>{
+    const [fav, setFav] = useState(false);
+  
+    const toggleFav = (e: React.MouseEvent) => {
+      e.preventDefault();
+      setFav((prev) => !prev);
+    };
+  
+    const img = product.images?.[0] ?? "/placeholder.png";
+    return (
+      <article className="group overflow-hidden   bg-white  transition ">
+        <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-100">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={img}
+            alt={product.title}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
           />
-        </button>
-      </div>
+          <button
+            onClick={toggleFav}
+            className="absolute top-2 right-2 rounded-full bg-white/80 p-1 hover:bg-white shadow"
+            aria-label="Add to wishlist"
+          >
+            <Heart
+              className={`h-5 w-5 ${
+                fav ? "fill-red-500 text-red-500" : "text-zinc-700"
+              }`}
+            />
+          </button>
+        </div>
+        <div className="space-y-1 p-3">
+          <h3 className="line-clamp-2 text-sm font-medium text-neutral-900">
+            {product.title}
+          </h3>
+          <p className="text-sm text-neutral-700">
+            {Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "GBP",
+            }).format(product.price)}
+          </p>
+        </div>
+      </article>
+    );
+  }
+  
 
-      <div className="p-3">
-        <p className="text-sm">{label}</p>
-        <p className="text-sm font-bold">{price}</p>
-      </div>
-    </Link>
-  );
-};
-
-export default ProductCard;
+export default ProductCard

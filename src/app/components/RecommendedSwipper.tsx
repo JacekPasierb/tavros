@@ -5,7 +5,7 @@ import {Navigation, A11y} from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 
-import ProductCard, {ProductCardProps} from "./ProductCard";
+import ProductCardR, {ProductCardProps} from "./ProductCardR";
 
 export default function RecommendedSwiper({
   items,
@@ -20,7 +20,7 @@ export default function RecommendedSwiper({
 
       <Swiper
         modules={[Navigation, A11y]}
-        navigation
+        
         spaceBetween={12}
         slidesPerView={2}
         breakpoints={{
@@ -31,7 +31,7 @@ export default function RecommendedSwiper({
       >
         {items.map((p) => (
           <SwiperSlide key={p.href}>
-            <ProductCard {...p} />
+            <ProductCardR {...p} />
           </SwiperSlide>
         ))}
       </Swiper>

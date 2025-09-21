@@ -4,15 +4,9 @@
 import {use, useMemo} from "react";
 import useSWR from "swr";
 import {useRouter, useSearchParams} from "next/navigation";
+import ProductCard, {Product} from "../../components/ProductCard";
 
 type PageProps = {params: Promise<{slug: string}>};
-type Product = {
-  _id: string;
-  title: string;
-  price: number;
-  images?: string[];
-  inStock?: boolean;
-};
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -150,33 +144,5 @@ export default function CollectionPage({params}: PageProps) {
         ))}
       </section>
     </main>
-  );
-}
-
-function ProductCard({product}: {product: Product}) {
-  const img = product.images?.[0] ?? "/placeholder.png";
-  return (
-    <article className="group overflow-hidden   bg-white  transition ">
-      <div className="aspect-[4/5] w-full overflow-hidden bg-neutral-100">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={img}
-          alt={product.title}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          loading="lazy"
-        />
-      </div>
-      <div className="space-y-1 p-3">
-        <h3 className="line-clamp-2 text-sm font-medium text-neutral-900">
-          {product.title}
-        </h3>
-        <p className="text-sm text-neutral-700">
-          {Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "GBP",
-          }).format(product.price)}
-        </p>
-      </div>
-    </article>
   );
 }
