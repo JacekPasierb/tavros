@@ -8,6 +8,7 @@ const UserSchema = new Schema(
     password: {type: String, required: true},
     role: {type: String, enum: ["admin", "user"], default: "user"},
     marketingOptIn: {type: Boolean, default: false},
+    favorites: [{ type: Schema.Types.ObjectId, ref: "Product", index: true }],
   },
   {timestamps: true}
 );

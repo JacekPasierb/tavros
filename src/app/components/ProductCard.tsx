@@ -1,4 +1,5 @@
 import { Heart } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import React, { useState } from 'react'
 
 export type Product = {
@@ -11,10 +12,38 @@ export type Product = {
 
 const ProductCard = ({product}: {product: Product}) =>{
     const [fav, setFav] = useState(false);
-  
-    const toggleFav = (e: React.MouseEvent) => {
+    const { data: session } = useSession();
+
+    const toggleFav = async (e: React.MouseEvent) => {
       e.preventDefault();
-      setFav((prev) => !prev);
+    
+      if (session) {
+        // wyślij do API
+        await fetch("/api/favorites", {
+          method: "POST",
+          body: JSON.stringify({ productId: product._id }),
+          headers: { "Content-Type": "application/json" },
+        });
+      } else {
+        // zapis w localStorage
+        setFav((prev) => {
+          const newFav = !prev;
+      
+          if (typeof window !== "undefined") {
+            const favs = JSON.parse(localStorage.getItem("favorites") || "[]");
+            if (newFav) {
+              localStorage.setItem("favorites", JSON.stringify([...favs, product._id]));
+            } else {
+              localStorage.setItem(
+                "favorites",
+                JSON.stringify(favs.filter((id: string) => id !== product._id))
+              );
+            }
+          }
+      
+          return newFav;
+        });
+      }
     };
   
     const img = product.images?.[0] ?? "/placeholder.png";

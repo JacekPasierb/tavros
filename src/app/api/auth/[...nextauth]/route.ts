@@ -4,7 +4,7 @@ import {compare} from "bcryptjs";
 import User from "@/models/User";
 import {connectToDatabase} from "../../../../lib/mongodb";
 
-const handler = NextAuth({
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -34,17 +34,22 @@ const handler = NextAuth({
       },
     }),
   ],
-  session: {strategy: "jwt"},
+  session: {strategy: "jwt" as const},
   callbacks: {
-    async jwt({token, user}) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async jwt({ token, user }: any) {
       // user jest tylko przy sign-in
       if (user) {
-        token.id = user.id;
-        token.role = (user as unknown as {role: string}).role;
+        token.id = (user as {id?: string}).id as string | undefined;
+        const role = (user as {role?: string}).role;
+        if (role === "admin" || role === "user") {
+          (token as {role?: "admin" | "user"}).role = role;
+        }
       }
       return token;
     },
-    async session({session, token}) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async session({ session, token }: any) {
       // dołóż id/rolę do session.user
       if (session.user) {
         (session.user as {id: string; role: string}).id = token.id as string;
@@ -58,6 +63,8 @@ const handler = NextAuth({
     signIn: "/account/signin", // własna strona logowania
   },
   secret: process.env.NEXTAUTH_SECRET,
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export {handler as GET, handler as POST};

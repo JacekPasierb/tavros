@@ -30,7 +30,7 @@ const Products = () => {
     <section className="w-full">
       <CategoryTabs active={tab} onChange={setTab} top="top-12" />
       <CollectionsGrid items={collections} />
-      <RecommendedSwiper items={recommended} />
+      {/* <RecommendedSwiper items={recommended} /> */}
     </section>
   );
 };
