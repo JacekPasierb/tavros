@@ -3,10 +3,10 @@
 import {useState} from "react";
 import "swiper/css";
 import "swiper/css/navigation";
-import {DATA} from "../data/data";
+// import {DATA} from "../data/data";
 import CategoryTabs from "../components/CategoryTabs";
 import CollectionsGrid from "../components/CollectionsGrid";
-import RecommendedSwiper from "../components/RecommendedSwipper";
+// import RecommendedSwiper from "../components/RecommendedSwipper";
 
 import useSWR from "swr";
 const fetcher = (url: string) => fetch(url).then(r => r.json());
@@ -15,7 +15,7 @@ const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 const Products = () => {
   const [tab, setTab] = useState<"MENS" | "WOMENS" | "KIDS" >("MENS");
-  const { recommended} = DATA[tab];
+  // const { recommended} = DATA[tab];
 
   const { data: colData } = useSWR(
     `/api/collections?gender=${tab}`,

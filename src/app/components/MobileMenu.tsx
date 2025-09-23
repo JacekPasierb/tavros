@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {X, ChevronRight, Search} from "lucide-react";
+import {X, ChevronRight} from "lucide-react";
 import {useEffect, useState} from "react";
 
 type MobileMenuProps = {open: boolean; onClose: () => void};

@@ -3,7 +3,7 @@
 
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
-import ProductCard from "@/app/components/ProductCard";
+import ProductCard, { Product } from "@/app/components/ProductCard";
 
 const fetcher = (u: string) => fetch(u).then(r => r.json());
 
@@ -36,7 +36,7 @@ export default function FavoritesPage() {
       )}
 
       <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {products.map((p: any) => (
+        {products.map((p: Product) => (
           <ProductCard key={p._id} product={p} />
         ))}
       </section>
