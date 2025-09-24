@@ -12,7 +12,7 @@ export async function GET(req: Request) {
 
   const items = rows.map((r) => ({
     label: r.name,
-    href: `/collections/${r.slug}`,
+    href: `/collections/${gender.toLowerCase()}/${r.slug}`,
     img: r.heroImage,
   }));
 

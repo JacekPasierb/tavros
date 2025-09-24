@@ -16,13 +16,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tavros",
-  description: "E-commerce shop",
+  metadataBase: new URL(
+    process.env.NODE_ENV === "production"
+      ? "https://tavros.co.uk" // <- Twoja domena
+      : "http://localhost:3000"
+  ),
+  title: "Tavros – Online Clothing & Accessories Store",
+  description: "Discover Tavros collections for men, women and kids.",
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      {url: "/favicon.ico", sizes: "any"},
+      {url: "/favicon-16x16.png", sizes: "16x16", type: "image/png"},
+      {url: "/favicon-32x32.png", sizes: "32x32", type: "image/png"},
     ],
     apple: "/apple-touch-icon.png",
   },

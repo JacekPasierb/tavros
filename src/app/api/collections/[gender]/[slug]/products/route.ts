@@ -1,18 +1,25 @@
 // app/api/collections/[slug]/products/route.ts
 import { NextResponse } from "next/server";
-import { connectToDatabase } from "../../../../../lib/mongodb";
-import Product, { ProductDoc } from "../../../../../models/Product";
+import { connectToDatabase } from "../../../../../../lib/mongodb";
+import Product, { ProductDoc } from "../../../../../../models/Product";
 import { FilterQuery } from "mongoose";
 
 
 export const dynamic = "force-dynamic";
 
-type Ctx = { params: Promise<{ slug: string }> };
+type Ctx = { params: Promise<{ gender: string; slug: string }> };
+const ALLOWED = new Set(["MENS", "WOMENS", "KIDS"]);
 
 export async function GET(req: Request, ctx: Ctx) {
   try {
     await connectToDatabase();
-    const { slug } = await ctx.params;
+    const { gender: g, slug } = await ctx.params;
+    const gender = g.toUpperCase();
+    if (!ALLOWED.has(gender)) {
+      return NextResponse.json({ ok: false, error: "Invalid gender" }, { status: 400 });
+    }
+
+    
     const { searchParams } = new URL(req.url);
 
     const sortKey = (searchParams.get("sort") ?? "newest") as
@@ -21,7 +28,7 @@ export async function GET(req: Request, ctx: Ctx) {
     const onlyInStock = searchParams.get("inStock") === "true";
 
     // Filtr bazowy po kolekcji
-    const where: FilterQuery<ProductDoc> = { collectionSlug: slug };
+    const where: FilterQuery<ProductDoc> = { collectionSlug: slug, gender };
     // Filtr po rozmiarach (wariantach)
     if (sizes.length) {
       where["variants"] = { $elemMatch: { size: { $in: sizes } } };

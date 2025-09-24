@@ -26,6 +26,8 @@ const Products = () => {
 
   
   const collections = colData?.items ?? [];
+  console.log("col",collections);
+  
   return (
     <section className="w-full">
       <CategoryTabs active={tab} onChange={setTab} top="top-12" />
