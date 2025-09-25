@@ -6,6 +6,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 
 import ProductCardR, {ProductCardProps} from "./ProductCardR";
+import TitleSection from "./TitleSection";
 
 export default function RecommendedSwiper({
   items,
@@ -13,14 +14,10 @@ export default function RecommendedSwiper({
   items: ProductCardProps[];
 }) {
   return (
-    <div className="container mx-auto px-4 pb-10">
-      <h2 className="mb-4 text-center text-sm font-extrabold tracking-[0.25em] uppercase">
-        Recommended for you
-      </h2>
-
+    <div className="container mx-auto px-4  pb-10 my-[25px] md:my-[50px]">
+      <TitleSection title={"Recommended for you"} />
       <Swiper
         modules={[Navigation, A11y]}
-        
         spaceBetween={12}
         slidesPerView={2}
         breakpoints={{

@@ -4,31 +4,32 @@ type Tab = "MENS" | "WOMENS" | "KIDS";
 const CategoryTabs = ({
   active,
   onChange,
-  top = "top-12",
 }: {
   active: Tab;
   onChange: (t: Tab) => void;
-  top?: string;
 }) => {
   return (
-    <div className={`sticky ${top} z-30 border-b bg-white/90 backdrop-blur`}>
-      <div className="container mx-auto px-4">
-        <div className="flex justify-center gap-6 py-3 text-lg font-semibold uppercase">
+    <div
+      className={`sticky top-14 z-30 border-b bg-white backdrop-blur md:top-18`}
+    >
+      <div className="container mx-auto  py-4">
+        <ul className="flex justify-center gap-6 py-3 text-lg font-semibold uppercase md:gap-8 lg:text-[25px]">
           {(["MENS", "WOMENS", "KIDS"] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => onChange(t)}
-              className={`pb-2 transition-colors ${
-                active === t
-                  ? "border-b-2 border-black"
-                  : "text-zinc-500 hover:text-black"
-              }`}
-              aria-pressed={active === t}
-            >
-              {t}
-            </button>
+            <li key={t}>
+              <button
+                onClick={() => onChange(t)}
+                className={` transition-colors ${
+                  active === t
+                    ? "border-b-2 border-black"
+                    : "text-zinc-500 hover:text-black"
+                } cursor-pointer`}
+                aria-pressed={active === t}
+              >
+                {t}
+              </button>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </div>
   );

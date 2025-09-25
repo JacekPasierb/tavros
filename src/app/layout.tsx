@@ -1,9 +1,12 @@
 import type {Metadata} from "next";
 import {Geist, Geist_Mono} from "next/font/google";
 import "./globals.css";
-import Header from "./components/Header";
 import SocialMedia from "./sections/SocialMedia";
 import Providers from "./providers";
+import Header from "./sections/Header";
+import PaymentMethods from "./sections/PaymentMethod";
+import Footer from "./sections/Footer";
+import LegalLinks from "./sections/LegalLinks";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -58,7 +61,12 @@ export default function RootLayout({
             </div>
           </div>
           {children}
-          <SocialMedia />
+          <div className="grid grid-cols md:grid-cols-2">
+            <SocialMedia />
+            <LegalLinks />
+          </div>
+          <PaymentMethods />
+          <Footer />
         </Providers>
       </body>
     </html>

@@ -19,7 +19,6 @@ const Banner = () => {
           pagination={{
             clickable: true,
             renderBullet: (index, className) => {
-              // index zaczyna się od 0, więc dodajemy 1
               const number = (index + 1).toString().padStart(2, "0"); // 01, 02, 03...
               return `<span class="${className} !bg-transparent !w-auto !h-auto !text-white text-2xl font-bold mx-8 px-3">${number}</span>`;
             },
@@ -80,10 +79,10 @@ const Banner = () => {
         />
         <div className="absolute inset-0 flex items-end mb-20 justify-center">
           <Link
-            href="/collections/mens-new"
+            href="/collections/mens/new"
             className="rounded-2xl bg-white px-6 py-2 text-lg font-bold uppercase text-black shadow hover:bg-black hover:text-white transition"
           >
-            Mens New
+            Mens New Collection
           </Link>
         </div>
       </div>
@@ -98,10 +97,10 @@ const Banner = () => {
         />{" "}
         <div className="absolute inset-0 flex items-end mb-20 justify-center">
           <Link
-            href="/collections/womens-new"
+            href="/collections/womens/new"
             className="rounded-2xl bg-white px-6 py-2 text-lg font-bold uppercase text-black shadow hover:bg-black hover:text-white transition"
           >
-            Womens New
+            Womens New Collection
           </Link>
         </div>
       </div>
