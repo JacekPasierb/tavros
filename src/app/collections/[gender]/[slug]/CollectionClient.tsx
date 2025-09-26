@@ -16,7 +16,7 @@ export default function CollectionClient({ gender, slug }: { gender: string; slu
   const inStock = sp.get("inStock") === "true";
   const sizes = sp.getAll("sizes");
 
-  // jeśli zmieniłeś API na /api/collections/[gender]/[slug]/products:
+  
   const apiUrl = useMemo(() => {
     const qs = new URLSearchParams();
     if (sort) qs.set("sort", sort);
@@ -50,8 +50,9 @@ export default function CollectionClient({ gender, slug }: { gender: string; slu
   };
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-8">
+    <main className="container mx-auto  px-4 py-8">
       <header className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        
         <div>
           <h1 className="text-2xl font-semibold capitalize">{slug}</h1>
           <p className="text-sm text-neutral-500">All Products: <span className="font-medium text-neutral-800">{count}</span></p>
@@ -92,15 +93,7 @@ export default function CollectionClient({ gender, slug }: { gender: string; slu
             })}
           </div>
         </div>
-        <label className="ml-auto flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            className="h-4 w-4 accent-black"
-            checked={inStock}
-            onChange={(e) => setParam("inStock", e.target.checked ? "true" : null)}
-          />
-          In stock only
-        </label>
+ 
       </section>
 
       {isLoading && <p className="text-sm text-neutral-500">Ładowanie produktów…</p>}
