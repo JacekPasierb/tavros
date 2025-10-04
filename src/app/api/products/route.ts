@@ -20,6 +20,7 @@ export async function GET(req: Request) {
       .map((id) => new Types.ObjectId(id));
 
     if (ids.length === 0) return NextResponse.json({ ok: true, data: [], count: 0 });
+console.log(ids);
 
     // pobierz tylko potrzebne pola
     const rows = await Product.find(

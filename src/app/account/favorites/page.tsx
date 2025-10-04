@@ -1,12 +1,12 @@
 "use client";
 
 import useSWR from "swr";
-import { useEffect, useState } from "react";
-import ProductCard, { Product } from "@/app/components/ProductCard";
-import { useSession } from "next-auth/react";
+import {useEffect, useState} from "react";
+import ProductCard, {Product} from "@/app/components/ProductCard";
+import {useSession} from "next-auth/react";
 
-export default function FavoritesPage() {
-  const { data: session } = useSession();
+const FavoritesPage = () => {
+  const {data: session} = useSession();
   const isLoggedIn = !!session;
 
   const [localProducts, setLocalProducts] = useState<Product[]>([]);
@@ -19,10 +19,10 @@ export default function FavoritesPage() {
     if (Array.isArray(favs)) setIds(favs);
   }, [isLoggedIn]);
 
-  const { data, mutate } = useSWR(
+  const {data, mutate} = useSWR(
     isLoggedIn ? "/api/favorites" : ids ? `/api/products?ids=${ids}` : null,
     (url: string) => fetch(url).then((r) => r.json()),
-    { revalidateOnFocus: false }
+    {revalidateOnFocus: false}
   );
 
   useEffect(() => {
@@ -36,9 +36,9 @@ export default function FavoritesPage() {
     if (isLoggedIn) {
       // Optymistyczna aktualizacja UI (bez reloadu)
       mutate(
-        (prev: { data: Product[] } | undefined) =>
+        (prev: {data: Product[]} | undefined) =>
           prev
-            ? { ...prev, data: prev.data.filter((p: Product) => p._id !== id) }
+            ? {...prev, data: prev.data.filter((p: Product) => p._id !== id)}
             : prev,
         false
       );
@@ -63,14 +63,13 @@ export default function FavoritesPage() {
       </p>
       {!isLoggedIn && (
         <p className="mb-6 text-sm text-zinc-500">
-          Your favourite products are saved only in this browser.
-          Create a free Tavros account to keep your favourites safe across all devices and never lose them.
+          Your favourite products are saved only in this browser. Create a free
+          Tavros account to keep your favourites safe across all devices and
+          never lose them.
         </p>
       )}
       {products.length === 0 && (
-        <p className="text-sm text-zinc-500">
-          No favourite products yet.
-        </p>
+        <p className="text-sm text-zinc-500">No favourite products yet.</p>
       )}
 
       <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -78,11 +77,13 @@ export default function FavoritesPage() {
           <ProductCard
             key={p._id}
             product={p}
-            showHeart={false}        // ❌ ukrywamy serduszko
+            showHeart={false} // ❌ ukrywamy serduszko
             onRemoved={handleRemove} // ✅ przekazujemy callback
           />
         ))}
       </section>
     </main>
   );
-}
+};
+
+export default FavoritesPage;
