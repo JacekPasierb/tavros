@@ -103,7 +103,7 @@ export default function CollectionClient({ gender, slug }: { gender: string; slu
       )}
 
       <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {products.map((p) => <ProductCard key={p._id} product={p} />)}
+        {products.map((p) => <ProductCard key={p._id} product={p} showHeart={true}/>)}
       </section>
     </main>
   );
