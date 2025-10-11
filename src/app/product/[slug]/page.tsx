@@ -9,6 +9,7 @@ import {useMemo, useState} from "react";
 import {useUserFavorites} from "@/lib/useUserFavorites";
 import {useSession} from "next-auth/react";
 import {useFavoritesStore} from "@/store/favoritesStore";
+import ProductGallery from "../../components/ProductGallery";
 
 const fetcher = async (u: string) => {
   const r = await fetch(u);
@@ -28,16 +29,17 @@ export default function ProductPage() {
     {revalidateOnFocus: false}
   );
 
-  const p = data?.data as {
-    _id: string;
-    title: string;
-    price: number;
-    currency?: string;
-    images?: string[];
-    variants?: {size: string; sku: string; stock: number}[];
-  } | undefined;
+  const p = data?.data as
+    | {
+        _id: string;
+        title: string;
+        price: number;
+        currency?: string;
+        images?: string[];
+        variants?: {size: string; sku: string; stock: number}[];
+      }
+    | undefined;
 
-  // ✅ kluczowa rzecz: od teraz operujemy NA _id, nie na slugu
   const productId = p?._id || "";
 
   // 2) Ulubione – zalogowany (Twoje API)
@@ -92,71 +94,78 @@ export default function ProductPage() {
   }
 
   return (
-    <main className="mx-auto max-w-6xl">
-      <div className="relative aspect-square w-full overflow-hidden bg-gray-100">
-        <Image
-          src={p?.images?.[0] ?? "/placeholder.png"}
-          alt={p?.title ?? "Product"}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+    <main className="mx-auto  px-3 lg:px-6 lg:py-3">
+      <div className="grid gap-8 lg:grid-cols-[2fr_1fr] lg:items-start">
+        {/* === LEWA: GALERIA === */}
+        <ProductGallery
+          images={p?.images}
+          title={p?.title ?? "Product"}
+          overlay={
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleFavorite();
+              }}
+              disabled={disabled}
+              className="rounded-full bg-white/80 p-2 shadow hover:bg-white"
+              aria-label={fav ? "Remove from wishlist" : "Add to wishlist"}
+              aria-pressed={fav}
+              title={fav ? "W ulubionych" : "Nie w ulubionych"}
+            >
+              <Heart
+                className={`h-6 w-6 ${
+                  fav ? "fill-red-500 text-red-500" : "text-zinc-700"
+                }`}
+              />
+            </button>
+          }
         />
+        
 
-        {/* ❤️ serduszko */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleFavorite();
-          }}
-          disabled={disabled}
-          className="absolute right-2 top-2 rounded-full bg-white/80 p-2 shadow hover:bg-white"
-          aria-label={fav ? "Remove from wishlist" : "Add to wishlist"}
-          aria-pressed={fav}
-          title={fav ? "W ulubionych" : "Nie w ulubionych"}
-        >
-          <Heart
-            className={`h-6 w-6 ${
-              fav ? "fill-red-500 text-red-500" : "text-zinc-700"
-            }`}
-          />
-        </button>
-      </div>
+        {/* === PRAWA: OPIS PRODUKTU === */}
+        <div className="lg:sticky lg:top-10  ">
+          <h1 className="mt-6 text-2xl font-semibold lg:mt-0">{p?.title}</h1>
+          <p className="mb-6 text-lg font-medium text-gray-800">
+            {Intl.NumberFormat("en-GB", {
+              style: "currency",
+              currency: p?.currency ?? "GBP",
+            }).format(p?.price ?? 0)}
+          </p>
 
-      <div className="container mx-auto px-3">
-        <h1 className="mt-6 text-2xl font-semibold">{p?.title}</h1>
-        <p className="mb-4 text-lg">
-          {Intl.NumberFormat("en-GB", {
-            style: "currency",
-            currency: p?.currency ?? "GBP",
-          }).format(p?.price ?? 0)}
-        </p>
+          {!!variants.length && (
+            <>
+              <h2 className="mb-2 font-medium">Select size:</h2>
+              <ul className="mb-6 flex flex-wrap gap-3">
+                {variants.map((variant) => (
+                  <li key={variant.size}>
+                    <button
+                      onClick={() => setSelectedSize(variant.size)}
+                      disabled={variant.stock < 1}
+                      className={` border px-4 py-2 text-sm ${
+                        variant.stock < 1
+                          ? "cursor-not-allowed opacity-50"
+                          : selectedSize === variant.size
+                          ? "border-black bg-black text-white"
+                          : "border-gray-300 hover:border-black"
+                      }`}
+                    >
+                      {variant.size}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
 
-        {!!variants.length && (
-          <>
-            <h2 className="mb-2 font-medium">Select size:</h2>
-            <ul className="mb-6 flex gap-3">
-              {variants.map((variant) => (
-                <li key={variant.size}>
-                  <button
-                    onClick={() => setSelectedSize(variant.size)}
-                    disabled={variant.stock < 1}
-                    className={`rounded-lg border px-4 py-2 ${
-                      variant.stock < 1
-                        ? "cursor-not-allowed opacity-50"
-                        : selectedSize === variant.size
-                        ? "border-black bg-black text-white"
-                        : "border-gray-300 hover:border-black"
-                    }`}
-                  >
-                    {variant.size}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
+          <button
+            type="button"
+            className="w-full  bg-black px-6 py-3 text-white hover:bg-black/90"
+          >
+            Add to cart
+          </button>
+        </div>
       </div>
     </main>
   );
