@@ -2,7 +2,6 @@
 "use client";
 
 import useSWR from "swr";
-import Image from "next/image";
 import {Heart} from "lucide-react";
 import {useParams} from "next/navigation";
 import {useMemo, useState} from "react";
@@ -122,10 +121,9 @@ export default function ProductPage() {
             </button>
           }
         />
-        
 
         {/* === PRAWA: OPIS PRODUKTU === */}
-        <div className="lg:sticky lg:top-10  ">
+        <div className="lg:sticky lg:top-10  mx-auto ">
           <h1 className="mt-6 text-2xl font-semibold lg:mt-0">{p?.title}</h1>
           <p className="mb-6 text-lg font-medium text-gray-800">
             {Intl.NumberFormat("en-GB", {
@@ -137,24 +135,49 @@ export default function ProductPage() {
           {!!variants.length && (
             <>
               <h2 className="mb-2 font-medium">Select size:</h2>
-              <ul className="mb-6 flex flex-wrap gap-3">
-                {variants.map((variant) => (
-                  <li key={variant.size}>
-                    <button
-                      onClick={() => setSelectedSize(variant.size)}
-                      disabled={variant.stock < 1}
-                      className={` border px-4 py-2 text-sm ${
-                        variant.stock < 1
-                          ? "cursor-not-allowed opacity-50"
-                          : selectedSize === variant.size
-                          ? "border-black bg-black text-white"
-                          : "border-gray-300 hover:border-black"
-                      }`}
-                    >
-                      {variant.size}
-                    </button>
-                  </li>
-                ))}
+              <ul className="grid grid-cols-4 gap-3 sm:grid-cols-4 my-4">
+                {variants.map((v) => {
+                  const disabled = v.stock < 1;
+                  const selected = selectedSize === v.size;
+
+                  return (
+                    <li key={v.size} className="contents">
+                      <button
+                        type="button"
+                        onClick={() => !disabled && setSelectedSize(v.size)}
+                        disabled={disabled}
+                        aria-pressed={selected}
+                        aria-label={`Size ${v.size}${
+                          disabled ? " (out of stock)" : ""
+                        }`}
+                        className={[
+                          "relative w-full select-none  border px-0 text-sm transition",
+                          "h-11 min-w-[5rem]", // sztywna wysokość jak u konkurencji
+                          "flex items-center justify-center", // wyśrodkowanie
+                          selected
+                            ? "border-black bg-black text-white"
+                            : "border-zinc-300 bg-white text-zinc-900 hover:border-black",
+                          disabled &&
+                            "cursor-not-allowed border-zinc-200 bg-zinc-50 text-zinc-400 hover:border-zinc-200",
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20",
+                        ].join(" ")}
+                      >
+                        {/* label */}
+                        <span className="font-medium">{v.size}</span>
+
+                        {/* przekreślenie dla out-of-stock */}
+                        {disabled && (
+                          <span
+                            aria-hidden="true"
+                            className="pointer-events-none absolute inset-0 flex items-center justify-center"
+                          >
+                            <span className="block h-px w-8 rotate-12 bg-zinc-300" />
+                          </span>
+                        )}
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
             </>
           )}
