@@ -1,118 +1,163 @@
+// app/(shop)/product/[slug]/page.client.tsx
 "use client";
 
 import useSWR from "swr";
 import Image from "next/image";
-import {Heart, ShoppingCart} from "lucide-react";
-import {useFavorite} from "../../../hooks/useFavorite";
-import {use, useState} from "react";
+import {Heart} from "lucide-react";
+import {useParams} from "next/navigation";
+import {useMemo, useState} from "react";
+import {useUserFavorites} from "@/lib/useUserFavorites";
+import {useSession} from "next-auth/react";
+import {useFavoritesStore} from "@/store/favoritesStore";
 
-type PageProps = {params: Promise<{slug: string}>};
-const fetcher = (u: string) => fetch(u).then((r) => r.json());
+const fetcher = async (u: string) => {
+  const r = await fetch(u);
+  if (!r.ok) throw new Error("Failed to fetch product");
+  return r.json();
+};
 
-export default function ProductPage({params}: PageProps) {
-  const {slug} = use(params);
-  const {data, error, isLoading} = useSWR(`/api/products/${slug}`, fetcher, {
-    revalidateOnFocus: false,
-  });
+export default function ProductPage() {
+  const {slug} = useParams<{slug: string}>();
+  const {status} = useSession();
+  const isLoggedIn = status === "authenticated";
 
-  const p = data?.data;
-  const {isFav, toggle} = useFavorite(p?._id || "");
+  // 1) Pobierz produkt po SLUGU
+  const {data, error, isLoading} = useSWR(
+    slug ? `/api/products/${slug}` : null,
+    fetcher,
+    {revalidateOnFocus: false}
+  );
+
+  const p = data?.data as {
+    _id: string;
+    title: string;
+    price: number;
+    currency?: string;
+    images?: string[];
+    variants?: {size: string; sku: string; stock: number}[];
+  } | undefined;
+
+  // ✅ kluczowa rzecz: od teraz operujemy NA _id, nie na slugu
+  const productId = p?._id || "";
+
+  // 2) Ulubione – zalogowany (Twoje API)
+  const {
+    ids: serverFavIds,
+    add,
+    remove,
+    isLoading: favsLoading,
+  } = useUserFavorites();
+
+  const isFavUser = useMemo(
+    () => serverFavIds?.has(productId) ?? false,
+    [serverFavIds, productId]
+  );
+
+  // 3) Ulubione – gość (Zustand)
+  const isFavGuest = useFavoritesStore((s) => s.isFavorite(productId));
+  const toggleGuest = useFavoritesStore((s) => s.toggle);
+
+  const [busy, setBusy] = useState(false);
+  const disabled = busy || (isLoggedIn && favsLoading);
+
+  // 4) Rozmiary – guard + memo
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [added, setAdded] = useState(false);
+  const variants = useMemo(() => p?.variants ?? [], [p?.variants]);
 
-  if (isLoading) return <p>Loading…</p>;
-  if (error || !data?.ok) return <p>Product not found</p>;
+  if (isLoading) return <main className="mx-auto max-w-6xl p-6">Loading…</main>;
+  if (error || !data?.ok || !data.data)
+    return <main className="mx-auto max-w-6xl p-6">Product not found</main>;
 
-  // obsługa dodawania do koszyka
-  const handleAddToCart = () => {
-    if (!selectedSize) {
-      alert("Please select a size first!");
+  const fav = isLoggedIn ? isFavUser : isFavGuest;
+
+  async function toggleFavorite() {
+    if (disabled) return;
+    if (!productId) return;
+
+    if (!isLoggedIn) {
+      // gość → lokalny store po ID
+      toggleGuest(productId);
       return;
     }
 
-    // tutaj możesz dodać API / Redux / Context
-    const item = {
-      id: p._id,
-      title: p.title,
-      price: p.price,
-      size: selectedSize,
-      image: p.images?.[0],
-      quantity: 1,
-    };
-
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    cart.push(item);
-    localStorage.setItem("cart", JSON.stringify(cart));
-
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
-  };
+    try {
+      setBusy(true);
+      if (isFavUser) await remove(productId);
+      else await add(productId);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <main className="mx-auto max-w-6xl">
-      <div className="relative aspect-square w-full bg-gray-100 overflow-hidden">
+      <div className="relative aspect-square w-full overflow-hidden bg-gray-100">
         <Image
-          src={p.images?.[0] ?? "/placeholder.png"}
-          alt={p.title}
+          src={p?.images?.[0] ?? "/placeholder.png"}
+          alt={p?.title ?? "Product"}
           fill
           className="object-cover"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
+
+        {/* ❤️ serduszko */}
         <button
-          onClick={toggle}
-          className="absolute top-2 right-2 rounded-full bg-white/80 p-2 hover:bg-white shadow"
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleFavorite();
+          }}
+          disabled={disabled}
+          className="absolute right-2 top-2 rounded-full bg-white/80 p-2 shadow hover:bg-white"
+          aria-label={fav ? "Remove from wishlist" : "Add to wishlist"}
+          aria-pressed={fav}
+          title={fav ? "W ulubionych" : "Nie w ulubionych"}
         >
           <Heart
             className={`h-6 w-6 ${
-              isFav ? "fill-red-500 text-red-500" : "text-zinc-700"
+              fav ? "fill-red-500 text-red-500" : "text-zinc-700"
             }`}
           />
         </button>
       </div>
-<div className="container mx-auto px-3">
-      <h1 className="mt-6 text-2xl font-semibold">{p.title}</h1>
-      <p className="text-lg mb-4">
-        {Intl.NumberFormat("en-GB", {
-          style: "currency",
-          currency: p.currency ?? "GBP",
-        }).format(p.price)}
-      </p>
 
-      {/* ✅ wybór rozmiaru */}
-      <h2 className="font-medium mb-2">Select size:</h2>
-      <ul className="flex gap-3 mb-6">
-        {p.variants.map(
-          (variant: {size: string; sku: string; stock: number}) => (
-            <li key={variant.size}>
-              <button
-                onClick={() => setSelectedSize(variant.size)}
-                disabled={variant.stock < 1}
-                className={`border rounded-lg px-4 py-2 ${
-                  variant.stock < 1
-                    ? "opacity-50 cursor-not-allowed"
-                    : selectedSize === variant.size
-                    ? "border-black bg-black text-white"
-                    : "border-gray-300 hover:border-black"
-                }`}
-              >
-                {variant.size}
-              </button>
-            </li>
-          )
+      <div className="container mx-auto px-3">
+        <h1 className="mt-6 text-2xl font-semibold">{p?.title}</h1>
+        <p className="mb-4 text-lg">
+          {Intl.NumberFormat("en-GB", {
+            style: "currency",
+            currency: p?.currency ?? "GBP",
+          }).format(p?.price ?? 0)}
+        </p>
+
+        {!!variants.length && (
+          <>
+            <h2 className="mb-2 font-medium">Select size:</h2>
+            <ul className="mb-6 flex gap-3">
+              {variants.map((variant) => (
+                <li key={variant.size}>
+                  <button
+                    onClick={() => setSelectedSize(variant.size)}
+                    disabled={variant.stock < 1}
+                    className={`rounded-lg border px-4 py-2 ${
+                      variant.stock < 1
+                        ? "cursor-not-allowed opacity-50"
+                        : selectedSize === variant.size
+                        ? "border-black bg-black text-white"
+                        : "border-gray-300 hover:border-black"
+                    }`}
+                  >
+                    {variant.size}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </>
         )}
-      </ul>
-
-      {/* ✅ przycisk dodania do koszyka */}
-      <button
-        onClick={handleAddToCart}
-        className={`flex items-center gap-4 px-5 py-7 font-medium transition w-full justify-center item-center uppercase ${
-          added
-            ? "bg-green-500 text-white"
-            : "bg-black text-white hover:bg-neutral-800"
-        }`}
-      >
-        <ShoppingCart className="w-5 h-5" />
-        {added ? "Added!" : "Add to cart"}
-      </button></div>
+      </div>
     </main>
   );
 }
