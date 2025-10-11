@@ -93,7 +93,7 @@ export default function ProductPage() {
   }
 
   return (
-    <main className="mx-auto  px-3 lg:px-6 lg:py-3">
+    <main className="mx-auto  lg:px-3 lg:px-6 lg:py-3">
       <div className="grid gap-8 lg:grid-cols-[2fr_1fr] lg:items-start">
         {/* === LEWA: GALERIA === */}
         <ProductGallery
