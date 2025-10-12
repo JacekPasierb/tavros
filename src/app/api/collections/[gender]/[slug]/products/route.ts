@@ -43,7 +43,7 @@ export async function GET(req: Request, { params }: Ctx) {
 
     if (onlyInStock) {
       where.variants = where.variants
-        ? { $elemMatch: { ...(where.variants as any).$elemMatch, stock: { $gt: 0 } } }
+        ? { $elemMatch: { ...(where.variants as { $elemMatch: { size?: { $in: string[] }; stock?: { $gt: number } } }).$elemMatch, stock: { $gt: 0 } } }
         : { $elemMatch: { stock: { $gt: 0 } } };
     }
 
