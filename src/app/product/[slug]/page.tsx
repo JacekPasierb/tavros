@@ -17,7 +17,7 @@ export default function ProductPage() {
 
   // ⚠️ Zdarza się, że w modelu jest `collectionSlug` (pojedyncze), nie `collectionsSlug`.
   const gender = product?.gender;
-  const collectionSlug = (product as any)?.collectionSlug ?? (product as any)?.collectionsSlug;
+  const collectionSlug = (product as { collectionSlug?: string; collectionsSlug?: string })?.collectionSlug ?? (product as { collectionSlug?: string; collectionsSlug?: string })?.collectionsSlug;
 
   // Zbuduj klucz TYLKO gdy mamy oba parametry; dodaj encode i (opcjonalnie) upper-case, jeśli API wymaga
   const limit = useResponsiveLimit();
