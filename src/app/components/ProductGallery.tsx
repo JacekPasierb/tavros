@@ -181,7 +181,7 @@ export default function ProductGallery({
 
       {/* ===== DESKTOP: miniatury z LEWEJ + duże foto (≥1024px) ===== */}
       <div
-        className="hidden lg:grid lg:grid-cols-[120px_1fr] lg:gap-5"
+        className="hidden lg:grid lg:grid-cols-[120px_1fr] lg:gap-1"
         tabIndex={0}
       >
         {safeImages.length > 1 && (

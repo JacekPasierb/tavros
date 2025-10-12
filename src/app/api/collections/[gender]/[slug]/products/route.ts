@@ -1,62 +1,71 @@
-// app/api/collections/[slug]/products/route.ts
+// app/api/collections/[gender]/[slug]/products/route.ts
 import { NextResponse } from "next/server";
-import { connectToDatabase } from "../../../../../../lib/mongodb";
-import Product, { ProductDoc } from "../../../../../../models/Product";
+import { connectToDatabase } from "@/lib/mongodb";
+import Product, { ProductDoc } from "@/models/Product";
 import { FilterQuery } from "mongoose";
-
 
 export const dynamic = "force-dynamic";
 
-type Ctx = { params: Promise<{ gender: string; slug: string }> };
+type Ctx = { params: { gender: string; slug: string } }; // ← nie Promise
+
 const ALLOWED = new Set(["MENS", "WOMENS", "KIDS"]);
 
-export async function GET(req: Request, ctx: Ctx) {
+export async function GET(req: Request, { params }: Ctx) {
   try {
     await connectToDatabase();
-    const { gender: g, slug } = await ctx.params;
-    const gender = g.toUpperCase();
+
+    const gender = params.gender.toUpperCase();
+    const slug = params.slug;
+
     if (!ALLOWED.has(gender)) {
       return NextResponse.json({ ok: false, error: "Invalid gender" }, { status: 400 });
     }
 
-    
     const { searchParams } = new URL(req.url);
 
-    const sortKey = (searchParams.get("sort") ?? "newest") as
-      | "newest" | "price_asc" | "price_desc";
-    const sizes = searchParams.getAll("sizes");          // ?sizes=S&sizes=M
+    // --- filters / sort
+    const sortKey = (searchParams.get("sort") ?? "newest") as "newest" | "price_asc" | "price_desc";
+    const sizes = searchParams.getAll("sizes");
     const onlyInStock = searchParams.get("inStock") === "true";
 
-    // Filtr bazowy po kolekcji
+    // --- pagination
+    const rawLimit = Number.parseInt(searchParams.get("limit") ?? "", 10);
+    const rawSkip = Number.parseInt(searchParams.get("skip") ?? "", 10);
+    const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(rawLimit, 1), 200) : 200; // 1..200
+    const skip = Number.isFinite(rawSkip) ? Math.max(rawSkip, 0) : 0;
+
+    // --- base filter
     const where: FilterQuery<ProductDoc> = { collectionSlug: slug, gender };
-    // Filtr po rozmiarach (wariantach)
+
     if (sizes.length) {
-      where["variants"] = { $elemMatch: { size: { $in: sizes } } };
+      where.variants = { $elemMatch: { size: { $in: sizes } } };
     }
 
-    // Dostępność: co najmniej jeden wariant ze stock > 0
     if (onlyInStock) {
-      where["variants"] = where["variants"]
-        ? { $elemMatch: { ...where["variants"].$elemMatch, stock: { $gt: 0 } } }
+      where.variants = where.variants
+        ? { $elemMatch: { ...(where.variants as any).$elemMatch, stock: { $gt: 0 } } }
         : { $elemMatch: { stock: { $gt: 0 } } };
     }
 
-    // Sortowanie
-    const sortMap: Record<string, Record<string, 1 | -1>> = {
+    const sortMap: Record<typeof sortKey, Record<string, 1 | -1>> = {
       newest: { createdAt: -1 },
       price_asc: { price: 1 },
       price_desc: { price: -1 },
     };
 
-    const items = await Product.find(where)
-      .sort(sortMap[sortKey])
-      .limit(200)
-      .lean();
+    const [items, total] = await Promise.all([
+      Product.find(where).sort(sortMap[sortKey]).skip(skip).limit(limit).lean(),
+      Product.countDocuments(where),
+    ]);
 
     return NextResponse.json({
       ok: true,
       data: items,
       count: items.length,
+      total,
+      skip,
+      limit,
+      hasMore: skip + items.length < total,
     });
   } catch (e) {
     console.error(e);

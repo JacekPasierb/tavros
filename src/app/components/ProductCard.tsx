@@ -97,7 +97,7 @@ export default function ProductCard({
 
   return (
     <Link href={`/product/${product._id}`} className="block group">
-      <article className="group overflow-hidden bg-white transition">
+      <article className="group overflow-hidden bg-transparent transition">
         <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-100">
           <Image
             src={img}
