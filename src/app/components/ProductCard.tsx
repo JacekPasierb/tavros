@@ -63,12 +63,10 @@ export default function ProductCard({
       setBusy(true);
 
       console.log("to", isFavUser);
-      
-      if (isFavUser) await remove(product._id);
 
+      if (isFavUser) await remove(product._id);
       else await add(product._id);
-      console.log("id",product._id);
-      
+      console.log("id", product._id);
     } catch (e) {
       console.error(e);
       // opcjonalnie toast/alert

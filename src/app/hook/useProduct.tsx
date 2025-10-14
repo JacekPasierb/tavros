@@ -1,9 +1,9 @@
 import useSWR from "swr";
-import { useParams } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { useUserFavorites } from "@/lib/useUserFavorites";
-import { useFavoritesStore } from "@/store/favoritesStore";
-import { useMemo, useState } from "react";
+import {useParams} from "next/navigation";
+import {useSession} from "next-auth/react";
+import {useUserFavorites} from "@/lib/useUserFavorites";
+import {useFavoritesStore} from "@/store/favoritesStore";
+import {useMemo, useState} from "react";
 
 const fetcher = async (url: string) => {
   const r = await fetch(url);
@@ -12,14 +12,14 @@ const fetcher = async (url: string) => {
 };
 
 export function useProduct() {
-  const { slug } = useParams<{ slug: string }>();
-  const { status } = useSession();
+  const {slug} = useParams<{slug: string}>();
+  const {status} = useSession();
   const isLoggedIn = status === "authenticated";
 
-  const { data, error, isLoading } = useSWR(
+  const {data, error, isLoading} = useSWR(
     slug ? `/api/products/${slug}` : null,
     fetcher,
-    { revalidateOnFocus: false }
+    {revalidateOnFocus: false}
   );
 
   const product = data?.data;
@@ -53,6 +53,7 @@ export function useProduct() {
       toggleGuest(productId);
       return;
     }
+    
     try {
       setBusy(true);
       if (isFavUser) await remove(productId);
@@ -64,5 +65,5 @@ export function useProduct() {
     }
   }
 
-  return { product, isLoading, error, fav, disabled, toggleFavorite };
+  return {product, isLoading, error, fav, disabled, toggleFavorite};
 }
