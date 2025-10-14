@@ -69,15 +69,10 @@ export default function ProductPage() {
         <ProductInfo product={product} />
       </section>
 
-      <section className="bg-[#f6f6f6] py-6 px-4 sm:px-6 lg:px-8">
-  <div className="mb-4 flex items-center justify-between w-full max-w-[1200px]">
+      <section className="bg-[#f6f6f6] py-6 px-4 flex flex-col items-center sm:px-6 lg:px-8">
+  <div className="mb-6 w-full text-center">
     <TitleSection title="Propose For You" />
-    <a
-      href={`/collections/${product.gender}/${collectionSlug}`}
-      className="hidden min-[1000px]:inline-block text-sm underline hover:opacity-80"
-    >
-      See all
-    </a>
+   
   </div>
 
   {/* SLIDER */}
