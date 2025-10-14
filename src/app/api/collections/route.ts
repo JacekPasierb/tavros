@@ -1,7 +1,7 @@
 import {connectToDatabase} from "../../../lib/mongodb";
 import Collection from "../../../models/Collection";
 
-const GET = async (req: Request) => {
+export async function GET(req: Request) {
   const {searchParams} = new URL(req.url);
   const gender = (searchParams.get("gender") || "MENS").toUpperCase();
   await connectToDatabase();
@@ -17,6 +17,4 @@ const GET = async (req: Request) => {
   }));
 
   return Response.json({items});
-};
-
-export default GET;
+}
