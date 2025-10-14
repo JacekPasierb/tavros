@@ -113,7 +113,7 @@ export default function ProductPage() {
     <Link
       href={`/collections/${product.gender}/${collectionSlug}`}
       prefetch={false}
-      className="inline-flex items-center rounded-full bg-black px-5 py-2 text-white text-sm font-medium hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-black/20"
+      className="inline-flex items-center  bg-black px-5 py-2 text-white text-sm font-medium hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-black/20"
     >
       View collection
     </Link>
