@@ -69,54 +69,57 @@ export default function ProductPage() {
         <ProductInfo product={product} />
       </section>
 
-      <section className="bg-[#f6f6f6] py-6 px-4  flex flex-col items-center sm:px-6 lg:px-8 ">
-        <div className="mb-4 flex items-center justify-between">
-          <TitleSection title="Propose For You" />
-          {/* link opcjonalny */}
-          <a
-            href={`/collections/${product.gender}/${collectionSlug}`}
-            className="hidden [1000px]:inline-block text-sm underline hover:opacity-80"
-          >
-            See all
-          </a>
-        </div>
+      <section className="bg-[#f6f6f6] py-6 px-4 sm:px-6 lg:px-8">
+  <div className="mb-4 flex items-center justify-between w-full max-w-[1200px]">
+    <TitleSection title="Propose For You" />
+    <a
+      href={`/collections/${product.gender}/${collectionSlug}`}
+      className="hidden min-[1000px]:inline-block text-sm underline hover:opacity-80"
+    >
+      See all
+    </a>
+  </div>
 
+  {/* SLIDER */}
+  <div
+    className="
+      w-full max-w-[1200px]
+      overflow-x-auto no-scrollbar
+      flex gap-4 snap-x snap-mandatory
+      px-4
+      min-[1000px]:grid min-[1000px]:grid-cols-3 min-[1000px]:gap-6
+      min-[1000px]:overflow-visible min-[1000px]:px-0
+    "
+  >
+    {products.map((p, i) => (
+      <motion.div
+        key={p._id}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, delay: i * 0.06 }}
+        className="
+          snap-start shrink-0
+          w-[260px]   /* stabilna szerokość kafelka na mobile */
+          min-[380px]:w-72
+          min-[1000px]:w-auto min-[1000px]:shrink
+        "
+      >
+        <ProductCard product={p} showHeart />
+      </motion.div>
+    ))}
+  </div>
 
-        {/* Mobile: poziomy scroll-snap; >=1000px: siatka 3 kolumny */}
-        <div
-          className="
-    flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory
-    scroll-pl-4 -ml-4 pl-4 pr-4
-    [1000px]:grid [1000px]:grid-cols-3 [1000px]:gap-6
-    [1000px]:overflow-visible [1000px]:ml-0 [1000px]:pl-0 [1000px]:pr-0
-  "
-        >
-          {products.map((p, i) => (
-            <motion.div
-              key={p._id}
-              initial={{opacity: 0, y: 8}}
-              animate={{opacity: 1, y: 0}}
-              transition={{duration: 0.35, delay: i * 0.06}}
-              className="
-        snap-start shrink-0 w-64
-        [1000px]:w-auto [1000px]:shrink
-      "
-            >
-              <ProductCard product={p} showHeart />
-            </motion.div>
-          ))}
-        </div>
-        <div className="mt-6 flex justify-center">
-          <Link
-            href={`/collections/${product.gender}/${collectionSlug}`}
-            prefetch={false}
-            className="inline-flex items-center rounded-full bg-black px-5 py-2 text-white text-sm font-medium hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-black/20"
-            aria-label={`View collection ${collectionSlug}`}
-          >
-            View collection
-          </Link>
-        </div>
-      </section>
+  <div className="mt-6 flex justify-center w-full">
+    <Link
+      href={`/collections/${product.gender}/${collectionSlug}`}
+      prefetch={false}
+      className="inline-flex items-center rounded-full bg-black px-5 py-2 text-white text-sm font-medium hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-black/20"
+    >
+      View collection
+    </Link>
+  </div>
+</section>
+
     </main>
   );
 }
