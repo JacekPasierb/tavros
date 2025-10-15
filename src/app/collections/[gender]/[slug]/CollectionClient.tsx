@@ -28,7 +28,9 @@ export default function CollectionClient({
     if (inStock) qs.set("inStock", "true");
     sizes.forEach((s) => qs.append("sizes", s));
     const q = qs.toString();
-    return `/api/collections/${gender}/${slug}/products${q ? `?${q}` : ""}`;
+    return `/api/products?gender=${gender}&collection=${slug}${
+      q ? `&${q}` : ""
+    }`;
   }, [gender, slug, sort, inStock, sizes]);
 
   const {data, error, isLoading} = useSWR(apiUrl, fetcher, {

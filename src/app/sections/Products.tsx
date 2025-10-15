@@ -14,11 +14,19 @@ const Products = () => {
   const [tab, setTab] = useState<"MENS" | "WOMENS" | "KIDS">("MENS");
   
 
-  const {data: colData} = useSWR(`/api/collections?gender=${tab}`, fetcher, {
-    keepPreviousData: true,
-  });
+  // const {data: colData} = useSWR(`/api/collections?gender=${tab}`, fetcher, {
+  //   keepPreviousData: true,
+  // });
 
-  const collections = colData?.items ?? [];
+  // const collections = colData?.items ?? [];
+  const { data } = useSWR(`/api/collections?gender=${tab}`, fetcher, {
+    keepPreviousData: true,
+    revalidateOnFocus: false,
+  });
+  const collections = data?.items ?? [];
+
+  console.log("ddd",collections);
+  
 
   interface ProductApiItem {
     _id: string;
@@ -31,18 +39,18 @@ const Products = () => {
     isSale?: boolean;
   }
 
-  const { data: recommendedData } = useSWR(
-    "/api/products?isRecommended=true", // Hypothetical API endpoint for recommended products
-    fetcher,
-    { revalidateOnFocus: false } // Prevent re-fetching on window focus
-  );
+  // const { data: recommendedData } = useSWR(
+  //   "/api/products?isRecommended=true", // Hypothetical API endpoint for recommended products
+  //   fetcher,
+  //   { revalidateOnFocus: false } // Prevent re-fetching on window focus
+  // );
 
-  const recommendedProducts = (recommendedData?.data ?? []).map((p: ProductApiItem) => ({
-    href: `/product/${p.slug}`,
-    img: p.images[0], // Assuming the first image in the array is the main one
-    label: p.title,
-    price: p.price,
-  }));
+  // const recommendedProducts = (recommendedData?.data ?? []).map((p: ProductApiItem) => ({
+  //   href: `/product/${p.slug}`,
+  //   img: p.images[0], // Assuming the first image in the array is the main one
+  //   label: p.title,
+  //   price: p.price,
+  // }));
 
   // To complete the task and display the recommended products section,
   // you should render the `RecommendedSwiper` component in the JSX return block.
@@ -59,9 +67,11 @@ const Products = () => {
     <section className=" w-full">
       <CategoryTabs active={tab} onChange={setTab} />
       <CollectionsGrid items={collections} />
-      {recommendedProducts.length > 0 && (
+      
+      {/* {recommendedProducts.length > 0 && (
         <RecommendedSwiper items={recommendedProducts} />
-      )}
+      )} */}
+
     </section>
   );
 };

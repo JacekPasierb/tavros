@@ -8,7 +8,6 @@ import TitleSection from "../../components/TitleSection";
 import useSWR from "swr";
 import ProductCard, {Product} from "../../components/ProductCard";
 import {useMemo} from "react";
-import {useResponsiveLimit} from "../../hook/useResponsiveLimit";
 import {motion} from "framer-motion";
 import Link from "next/link";
 
@@ -27,13 +26,13 @@ export default function ProductPage() {
       ?.collectionsSlug;
 
   // Zbuduj klucz TYLKO gdy mamy oba parametry; dodaj encode i (opcjonalnie) upper-case, jeśli API wymaga
-  const limit = useResponsiveLimit();
+
   const relatedKey = useMemo(() => {
-    if (!gender || !collectionSlug || limit == null) return null;
-    return `/api/collections/${encodeURIComponent(gender)}/${encodeURIComponent(
-      collectionSlug
-    )}/products?limit=${limit}`;
-  }, [gender, collectionSlug, limit]);
+    if (!gender || !collectionSlug) return null;
+    return `/api/products?gender=${encodeURIComponent(
+      gender
+    )}&collection=${encodeURIComponent(collectionSlug)}&limit=3`;
+  }, [gender, collectionSlug]);
 
   // Pomocniczy log – zobaczysz, czy wartości istnieją i jaki jest klucz
   if (process.env.NODE_ENV !== "production") {

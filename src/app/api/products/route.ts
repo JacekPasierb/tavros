@@ -1,41 +1,77 @@
-import { NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
+import {NextRequest, NextResponse} from "next/server";
+import {connectToDatabase} from "@/lib/mongodb";
 import Product from "@/models/Product";
-import { Types } from "mongoose";
+import {FilterQuery} from "mongoose";
+import {ProductDoc} from "../../../models/Product";
 
-export const dynamic = "force-dynamic";
-
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
 
-    const { searchParams } = new URL(req.url);
-    const idsParam = searchParams.get("ids"); // "id1,id2,id3"
-    if (!idsParam) return NextResponse.json({ ok: true, data: [], count: 0 });
+    const sp = req.nextUrl.searchParams;
 
-    // parse + walidacja ObjectId
-    const rawIds = idsParam.split(",").map((s) => s.trim()).filter(Boolean);
-    const ids = rawIds
-      .filter((id) => Types.ObjectId.isValid(id))
-      .map((id) => new Types.ObjectId(id));
+    const gender = (sp.get("gender") || "").toUpperCase();
+    const collection = sp.get("collection") || undefined;
+    const sortKey =
+      (sp.get("sort") as "newest" | "price_asc" | "price_desc") || "newest";
+    const sizes = sp.getAll("sizes"); // ["M","L"]
+    const inStockParam = sp.get("inStock") === "true";
 
-    if (ids.length === 0) return NextResponse.json({ ok: true, data: [], count: 0 });
-console.log(ids);
+    const rawLimit = parseInt(sp.get("limit") ?? "", 10);
+    const rawSkip  = parseInt(sp.get("skip")  ?? "", 10);
+    const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(rawLimit, 1), 50) : 12;
+    const skip  = Number.isFinite(rawSkip)  ? Math.max(rawSkip, 0)              : 0;
 
-    // pobierz tylko potrzebne pola
-    const rows = await Product.find(
-      { _id: { $in: ids } },
-      { title: 1, price: 1, images: 1, slug: 1, currency: 1, collectionSlug: 1 }
-    ).lean();
+    // --- filtr
+    const where: FilterQuery<ProductDoc> = {};
+    if (gender) where.gender = gender;
+    if (collection) where.collectionSlug = collection;
 
-    // zachowaj kolejność jak w `ids`
-    const pos = new Map(ids.map((id, i) => [id.toString(), i]));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    rows.sort((a: any, b: any) => (pos.get(a._id.toString()) ?? 0) - (pos.get(b._id.toString()) ?? 0));
+    const mustBeInStock = inStockParam || sizes.length > 0;
 
-    return NextResponse.json({ ok: true, data: rows, count: rows.length });
-  } catch (e) {
-    console.error(e);
-    return NextResponse.json({ ok: false, error: "Failed to fetch products by ids" }, { status: 500 });
+    // --- filtrowanie po rozmiarach i dostępności
+    if (sizes.length > 0 || mustBeInStock) {
+      const elem: {
+        size?: {$in: string[]};
+        stock?: {$nin: (string | number | null | undefined)[]};
+      } = {};
+      if (sizes.length > 0) elem.size = {$in: sizes};
+      // działa dla stock jako number **i** string
+      if (mustBeInStock) elem.stock = {$nin: [0, "0", null, undefined]};
+      where.variants = {$elemMatch: elem};
+    }
+
+    // --- sortowanie
+    const sortMap = {
+      newest: {createdAt: -1},
+      price_asc: {price: 1},
+      price_desc: {price: -1},
+    } as const;
+
+     const [items, total] = await Promise.all([
+      Product.find(where)
+        .sort(sortMap[sortKey])
+        .skip(skip)
+        .limit(limit)
+        .select("title slug price images gender collectionSlug variants")
+        .lean(),
+      Product.countDocuments(where),
+    ]);
+
+    return NextResponse.json({
+      ok: true,
+      data: items,
+      count: items.length,
+      total,
+      skip,
+      limit,
+      hasMore: skip + items.length < total,
+    });
+  } catch (err) {
+    console.error("[GET /api/products]", err);
+    return NextResponse.json(
+      {ok: false, error: "Błąd pobierania produktów"},
+      {status: 500}
+    );
   }
 }
