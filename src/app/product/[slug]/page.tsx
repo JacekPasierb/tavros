@@ -7,7 +7,7 @@ import ProductInfo from "../../components/ProductInfo";
 import useSWR from "swr";
 import {useMemo} from "react";
 import Slider from "../../components/Slider";
-import { Product } from "../../components/ProductCard";
+import {Product} from "../../components/ProductCard";
 
 const fetcher = (u: string) => fetch(u).then((r) => r.json());
 

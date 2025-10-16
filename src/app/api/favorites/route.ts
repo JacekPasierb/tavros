@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ok: false}, {status: 401});
 
   const {productId} = await req.json();
-  console.log("pro",productId);
+  
   
   if (!Types.ObjectId.isValid(productId))
     return NextResponse.json({ok: false, error: "Invalid id"}, {status: 400});
