@@ -8,8 +8,7 @@ import useSWR from "swr";
 
 type MobileMenuProps = { open: boolean; onClose: () => void };
 type ApiCollectionItem = { label: string; href: string; img?: string };
-const fetcher = (u: string) => fetch(u).then((r) => r.json());
-
+const fetcher = (url: string) => fetch(url, { cache: "no-store" }).then(r => r.json());
 const accent = "emerald-600";
 
 export default function MobileMenu({ open, onClose }: MobileMenuProps) {
@@ -22,14 +21,20 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
   }, [open]);
 
   // ✅ POBIERANIE KOLEKCJI Z API (tylko gdy menu otwarte)
-  const { data, isLoading, error } = useSWR<{ items: ApiCollectionItem[] }>(
-    open ? `/api/collections?gender=${tab}` : null,
-    fetcher,
-    { revalidateOnFocus: false, keepPreviousData: true }
+  const { data, isLoading, error } = useSWR(
+    open ? [`/api/collections`, tab] : null,      // klucz tablicowy
+    ([base, t]) => fetcher(`${base}?gender=${t}`), // budowanie URL w fetcherze
+    {
+      keepPreviousData: true,
+      revalidateOnFocus: false,
+      revalidateIfStale: true,
+      revalidateOnMount: true,
+      dedupingInterval: 0, // wymuś odświeżenie przy zmianie tab
+    }
   );
   // ✅ Statyczne pozycje + dynamiczne „Shop By Collection"
   const panels = useMemo(() => {
-    const collections = data?.items ?? [];
+    const collections: ApiCollectionItem[] = data?.items ?? [];
     
     const base = [
       { label: "New In", href: `/collections/${tab.toLowerCase()}/new-in`, special: true },

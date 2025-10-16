@@ -51,8 +51,10 @@ export async function GET(req: NextRequest) {
       {items},
       {
         headers: {
-          "Cache-Control":
-            "public, max-age=0, s-maxage=60, stale-while-revalidate=300",
+          // standardowy cache kill:
+          "Cache-Control": "private, no-store, no-cache, max-age=0, must-revalidate",
+          // (opcjonalnie dla Netlify CDN - działa lepiej)
+          "Netlify-CDN-Cache-Control": "no-cache",
         },
       }
     );
