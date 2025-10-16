@@ -63,6 +63,8 @@ export async function GET(req: NextRequest) {
       (sp.get("sort") as "newest" | "price_asc" | "price_desc") || "newest";
     const sizes = sp.getAll("sizes"); // ["M","L"]
     const inStockParam = sp.get("inStock") === "true";
+    const isRecommended = sp.get("isRecommended") === "true";
+ 
 
     const rawLimit = parseInt(sp.get("limit") ?? "", 10);
     const rawSkip = parseInt(sp.get("skip") ?? "", 10);
@@ -75,6 +77,7 @@ export async function GET(req: NextRequest) {
     const where: FilterQuery<ProductDoc> = {};
     if (gender) where.gender = gender;
     if (collection) where.collectionSlug = collection;
+    if (isRecommended) where.isRecommended = true;
 
     const mustBeInStock = inStockParam || sizes.length > 0;
 

@@ -2,86 +2,50 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {X, ChevronRight} from "lucide-react";
-import {useEffect, useState} from "react";
+import { X, ChevronRight } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import useSWR from "swr";
 
-type MobileMenuProps = {open: boolean; onClose: () => void};
+type MobileMenuProps = { open: boolean; onClose: () => void };
+type ApiCollectionItem = { label: string; href: string; img?: string };
+const fetcher = (u: string) => fetch(u).then((r) => r.json());
 
-type PanelItem = {
-  label: string;
-  href?: string;
-  children?: {label: string; href: string}[];
-  special?: boolean;
-};
+const accent = "emerald-600";
 
-const PANELS: Record<"MENS" | "WOMENS" | "KIDS", PanelItem[]> = {
-  MENS: [
-    {label: "New In", href: "/collections/mens-new", special: true},
-    {label: "Shop All", href: "/men/all"},
-    {label: "Best Sellers", href: "/men/best"},
-    {label: "Sale", href: "/men/sale"},
-    {
-      label: "Shop By Category",
-      children: [
-        {label: "T-Shirts", href: "/men/tshirts"},
-        {label: "Hoodies", href: "/men/hoodies"},
-        {label: "Bottoms", href: "/men/bottoms"},
-        {label: "Shoes", href: "/men/shoes"},
-      ],
-    },
-    {
-      label: "Shop By Collection",
-      children: [
-        {label: "Core", href: "/men/collection/core"},
-        {label: "Athleisure", href: "/men/collection/athleisure"},
-      ],
-    },
-  ],
-  WOMENS: [
-    {label: "New In", href: "/collections/womens-new", special: true},
-    {label: "Shop All", href: "/women/all"},
-    {label: "Best Sellers", href: "/women/best"},
-    {label: "Sale", href: "/women/sale"},
-    {
-      label: "Shop By Category",
-      children: [
-        {label: "Tops", href: "/women/tops"},
-        {label: "Leggings", href: "/women/leggings"},
-        {label: "Outerwear", href: "/women/outerwear"},
-      ],
-    },
-    {
-      label: "Shop By Collection",
-      children: [
-        {label: "Core", href: "/women/collection/core"},
-        {label: "Lifestyle", href: "/women/collection/lifestyle"},
-      ],
-    },
-  ],
-  KIDS: [
-    {label: "Shop All", href: "/kids/all"},
-    {label: "Sale", href: "/kids/sale"},
-    {
-      label: "Shop By Category",
-      children: [
-        {label: "T-Shirts", href: "/kids/tshirts"},
-        {label: "Hoodies", href: "/kids/hoodies"},
-      ],
-    },
-  ],
-};
-
-const accent = "emerald-600"; // łatwo zmienisz motyw koloru
-
-export default function MobileMenu({open, onClose}: MobileMenuProps) {
+export default function MobileMenu({ open, onClose }: MobileMenuProps) {
   const [tab, setTab] = useState<"MENS" | "WOMENS" | "KIDS">("MENS");
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  // blokada scrolla body gdy menu otwarte
   useEffect(() => {
     document.body.classList.toggle("overflow-hidden", open);
     return () => document.body.classList.remove("overflow-hidden");
   }, [open]);
+
+  // ✅ POBIERANIE KOLEKCJI Z API (tylko gdy menu otwarte)
+  const { data, isLoading, error } = useSWR<{ items: ApiCollectionItem[] }>(
+    open ? `/api/collections?gender=${tab}` : null,
+    fetcher,
+    { revalidateOnFocus: false, keepPreviousData: true }
+  );
+  // ✅ Statyczne pozycje + dynamiczne „Shop By Collection"
+  const panels = useMemo(() => {
+    const collections = data?.items ?? [];
+    
+    const base = [
+      { label: "New In", href: `/collections/${tab.toLowerCase()}/new-in`, special: true },
+      { label: "Shop All", href: `/${tab.toLowerCase()}/all` },
+      { label: "Best Sellers", href: `/${tab.toLowerCase()}/best` },
+      { label: "Sale", href: `/${tab.toLowerCase()}/sale` },
+    ];
+
+    const dynamicCollections = {
+      label: "Shop By Collection",
+      children:
+        collections.map((c) => ({ label: c.label, href: c.href })) // href już gotowy z API
+    };
+
+    return [...base, dynamicCollections];
+  }, [tab, data?.items]);
 
   const toggleSection = (label: string) =>
     setExpanded((prev) => (prev === label ? null : label));
@@ -131,24 +95,14 @@ export default function MobileMenu({open, onClose}: MobileMenuProps) {
                 <X className="h-5 w-5" />
               </button>
             </div>
-
-            {/* search */}
-            {/* <label className="relative block">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-              <input
-                type="search"
-                placeholder="Search products…"
-                className="w-full rounded-lg border border-zinc-200 bg-zinc-50 py-2 pl-9 pr-3 text-sm outline-none focus:border-zinc-300"
-              />
-            </label> */}
           </div>
 
-          {/* MIDDLE (scroll) */}
+          {/* MIDDLE */}
           <div className="flex-1 overflow-y-auto px-3 py-3">
             <ul className="space-y-3">
-              {PANELS[tab].map((it) => (
+              {panels.map((it) => (
                 <li key={it.label}>
-                  {it.children ? (
+                  {"children" in it ? (
                     <div className="rounded-xl border border-zinc-200 bg-white shadow-sm">
                       <button
                         className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-[15px] font-medium"
@@ -161,9 +115,21 @@ export default function MobileMenu({open, onClose}: MobileMenuProps) {
                           }`}
                         />
                       </button>
+
                       {expanded === it.label && (
                         <ul className="px-2 pb-2">
-                          {it.children.map((c) => (
+                          {isLoading && (
+                            <li className="px-3 py-2 text-sm text-zinc-500">Loading…</li>
+                          )}
+                          {error && (
+                            <li className="px-3 py-2 text-sm text-red-600">
+                              Failed to load collections
+                            </li>
+                          )}
+                          {!isLoading && !error && it.children!.length === 0 && (
+                            <li className="px-3 py-2 text-sm text-zinc-500">No collections</li>
+                          )}
+                          {it.children!.map((c) => (
                             <li key={c.href}>
                               <Link
                                 href={c.href}
@@ -179,10 +145,10 @@ export default function MobileMenu({open, onClose}: MobileMenuProps) {
                     </div>
                   ) : (
                     <Link
-                      href={it.href || "#"}
+                      href={it.href!}
                       onClick={onClose}
                       className={`block rounded-xl border border-zinc-200 px-4 py-3 text-[15px] font-medium shadow-sm transition hover:shadow ${
-                        it.special
+                        (it).special
                           ? "bg-gradient-to-r from-black to-zinc-800 text-white"
                           : "bg-white"
                       }`}
@@ -195,50 +161,25 @@ export default function MobileMenu({open, onClose}: MobileMenuProps) {
             </ul>
           </div>
 
-          {/* BOTTOM – elegancka stopka */}
+          {/* BOTTOM */}
           <div
             className="flex-none border-t bg-zinc-50/60 px-5 py-5"
-            style={{
-              paddingBottom: "calc(env(safe-area-inset-bottom,0px)+0.75rem)",
-            }}
+            style={{ paddingBottom: "calc(env(safe-area-inset-bottom,0px)+0.75rem)" }}
           >
             <div className="flex flex-col items-center gap-4 text-center">
-              {/* brand */}
               <div className="space-y-1">
-                <p className="text-xs tracking-[0.25em] text-zinc-500">
-                  TAVROS
-                </p>
-                <Image
-                  src="/icons/logo.svg" // podmień na swoje logo
-                  alt="Brand logo"
-                  width={120}
-                  height={40}
-                  className="h-auto w-32 object-contain"
-                />
+                <p className="text-xs tracking-[0.25em] text-zinc-500">TAVROS</p>
+                <Image src="/icons/logo.svg" alt="Brand logo" width={120} height={40} className="h-auto w-32 object-contain" />
               </div>
-
-              {/* CTA */}
               <div className="grid w-full grid-cols-2 gap-3">
-                <Link
-                  href="/account/register"
-                  onClick={onClose}
-                  className="rounded-full border border-zinc-300 bg-white py-2 text-sm font-medium hover:border-zinc-400 hover:shadow-sm"
-                >
+                <Link href="/account/register" onClick={onClose} className="rounded-full border border-zinc-300 bg-white py-2 text-sm font-medium hover:border-zinc-400 hover:shadow-sm">
                   Create Account
                 </Link>
-                <Link
-                  href="/account/signin"
-                  onClick={onClose}
-                  className="rounded-full bg-black py-2 text-sm font-semibold text-white hover:bg-zinc-900"
-                >
+                <Link href="/account/signin" onClick={onClose} className="rounded-full bg-black py-2 text-sm font-semibold text-white hover:bg-zinc-900">
                   Log in
                 </Link>
               </div>
-
-              {/* micro-copy */}
-              <p className="text-[11px] leading-snug text-zinc-500">
-                Save favourites, track orders & checkout faster.
-              </p>
+              <p className="text-[11px] leading-snug text-zinc-500">Save favourites, track orders & checkout faster.</p>
             </div>
           </div>
         </div>

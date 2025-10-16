@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
 
     const items = rows.map((r) => ({
       label: r.name,
-      href: `/collections/${r.gender || "MENS"}/${r.slug}`,
+      href: `/collections/${gender}/${r.slug}`,
       img: r.heroImage,
     }));
 
