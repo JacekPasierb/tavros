@@ -8,7 +8,7 @@ import User from "@/models/User";
 const makeKey = (x: {_id: unknown; size?: string; sku?: string}) =>
   `${String(x._id)}_${x.sku ?? x.size ?? "nosize"}`;
 
-type CartItemDoc = {
+export type CartItemDoc = {
   _id: unknown; // ⬅ uogólnione
   title?: string;
   price?: number | string;

@@ -20,7 +20,6 @@ export default function CartDrawer({
   const {items, subtotal, updateItem, removeItem, isLoading} = useUserCart();
   const initialFocusRef = useRef<HTMLButtonElement>(null);
   const lastActiveRef = useRef<HTMLElement | null>(null);
-  console.log("ii", items);
 
   useEffect(() => {
     if (open) {
@@ -90,22 +89,19 @@ export default function CartDrawer({
               {!items || items.length === 0 ? (
                 <EmptyState />
               ) : (
-                items.map((it) => {
+                items.map((it: CartLine) => {
                   const imgSrc =
                     // prefer single image
-                    (it as any).image ||
+                    it.image ||
                     // or first from images array
-                    (Array.isArray((it as any).images)
-                      ? (it as any).images[0]
-                      : undefined) ||
+                    (Array.isArray(it.images) ? it.images[0] : undefined) ||
                     // or heroImage
-                    (it as any).heroImage ||
+                    it.heroImage ||
                     // fallback
                     "/placeholder.webp";
 
                   const mapKey =
-                    (it as CartLine).key ||
-                    `${(it as any).id ?? it.title}-${it.size ?? "nosize"}`;
+                    it.key || `${it._id ?? it.title}-${it.size ?? "nosize"}`;
 
                   return (
                     <div
