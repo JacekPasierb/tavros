@@ -1,6 +1,6 @@
 import {Heart, ShoppingBag, User} from "lucide-react";
 import Link from "next/link";
-import React, { useMemo, useState } from "react";
+import React, {useState} from "react";
 import CartDrawer from "./CartDrawer";
 
 const actions = [
@@ -10,28 +10,6 @@ const actions = [
 
 const IconsAction = () => {
   const [open, setOpen] = useState(false);
-  const [items, setItems] = useState([
-    // przyklad danych
-    { _id: "1", title: "Hoodie Black", price: 199, qty: 1, image: "/img1.webp", slug: "hoodie-black" },
-  ]);
-
-  const subtotal = useMemo(
-    () => items.reduce((s, i) => s + i.price * i.qty, 0),
-    [items]
-  );
-
-  const inc = (id: string) =>
-    setItems((arr) =>
-      arr.map((x) => (x._id === id ? { ...x, qty: x.qty + 1 } : x))
-    );
-  const dec = (id: string) =>
-    setItems((arr) =>
-      arr.map((x) =>
-        x._id === id ? { ...x, qty: Math.max(1, x.qty - 1) } : x
-      )
-    );
-  const remove = (id: string) =>
-    setItems((arr) => arr.filter((x) => x._id !== id));
 
   return (
     <div className="flex gap-1 justify-self-end md:gap-4">
@@ -57,15 +35,7 @@ const IconsAction = () => {
       >
         <ShoppingBag />
       </button>
-      <CartDrawer
-        open={open}
-        onClose={() => setOpen(false)}
-        items={items}
-        subtotal={subtotal}
-        onInc={inc}
-        onDec={dec}
-        onRemove={remove}
-      />
+      <CartDrawer open={open} onClose={() => setOpen(false)} />
     </div>
   );
 };
