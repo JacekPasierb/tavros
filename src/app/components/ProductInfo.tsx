@@ -1,5 +1,6 @@
 "use client";
 import {useState} from "react";
+import { useUserCart } from "../../lib/useUserCart";
 
 type Variant = {
   size: string;
@@ -14,11 +15,49 @@ type Product = {
   currency?: string;
   images?: string[];
   variants?: Variant[];
+  slug?: string;
 };
 
 export default function ProductInfo({product}: {product: Product}) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [sizeError, setSizeError] = useState(false);
   const variants = product?.variants ?? [];
+  
+  const { addItem, isLoading } = useUserCart();
+
+  const handleAddToCart = async () => {
+    if (isAdding || isLoading) return;
+    
+    // Sprawdź czy rozmiar jest wymagany ale nie wybrany
+    if (variants.length > 0 && !selectedSize) {
+      setSizeError(true);
+      setTimeout(() => setSizeError(false), 3000);
+      return;
+    }
+    
+    setSizeError(false);
+    
+    setIsAdding(true);
+    try {
+      const cartItem = {
+        _id: product._id,
+        title: product.title,
+        price: product.price,
+        image: product.images?.[0],
+        qty: 1,
+        slug: product.slug || product._id,
+        size: selectedSize || undefined,
+        sku: selectedSize ? variants.find(v => v.size === selectedSize)?.sku : undefined,
+      };
+      
+      await addItem(cartItem);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    } finally {
+      setIsAdding(false);
+    }
+  };
 
   return (
     <div className="lg:sticky lg:top-10 px-4  mx-auto lg:px-0">
@@ -33,6 +72,9 @@ export default function ProductInfo({product}: {product: Product}) {
       {!!variants.length && (
         <>
           <h2 className="mb-2 font-medium">Select size:</h2>
+          {sizeError && (
+            <p className="mb-2 text-sm text-red-600">Please select a size</p>
+          )}
           <ul className="grid grid-cols-4 gap-3 sm:grid-cols-4 my-4 lg:gap-2">
             {variants.map((v) => {
               const disabled = v.stock < 1;
@@ -41,7 +83,12 @@ export default function ProductInfo({product}: {product: Product}) {
                 <li key={v.size}>
                   <button
                     type="button"
-                    onClick={() => !disabled && setSelectedSize(v.size)}
+                    onClick={() => {
+                      if (!disabled) {
+                        setSelectedSize(v.size);
+                        setSizeError(false);
+                      }
+                    }}
                     disabled={disabled}
                     aria-pressed={selected}
                     aria-label={`Size ${v.size}${
@@ -77,10 +124,11 @@ export default function ProductInfo({product}: {product: Product}) {
 
       <button
         type="button"
-        className="w-full bg-black px-6 py-3 text-white hover:bg-black/90"
-        disabled={!!variants.length && !selectedSize}
+        onClick={handleAddToCart}
+        disabled={!!variants.length && !selectedSize || isAdding || isLoading}
+        className="w-full bg-black px-6 py-3 text-white hover:bg-black/90 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Add to cart
+        {isAdding ? "Adding..." : "Add to cart"}
       </button>
     </div>
   );

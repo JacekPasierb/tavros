@@ -1,7 +1,7 @@
 // components/ProductCard.tsx
 "use client";
 
-import {Heart, X} from "lucide-react";
+import {Heart,X} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import {useFavoritesStore} from "@/store/favoritesStore";
@@ -62,11 +62,8 @@ export default function ProductCard({
     try {
       setBusy(true);
 
-      
-
       if (isFavUser) await remove(product._id);
       else await add(product._id);
-     
     } catch (e) {
       console.error(e);
       // opcjonalnie toast/alert
@@ -127,6 +124,7 @@ export default function ProductCard({
               />
             </button>
           )}
+        
         </div>
 
         <div className="flex items-start justify-between py-3 px-2">

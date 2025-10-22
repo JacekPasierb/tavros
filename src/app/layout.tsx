@@ -61,7 +61,7 @@ export default function RootLayout({
             </div>
           </div>
           {children}
-          <div className="grid grid-cols md:grid-cols-2">
+          <div className="grid grid-cols md:grid-cols-2 py-10">
             <SocialMedia />
             <LegalLinks />
           </div>

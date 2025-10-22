@@ -3,7 +3,7 @@ import {FaFacebookF, FaInstagram, FaYoutube, FaTiktok} from "react-icons/fa";
 
 const SocialMedia = () => {
   return (
-    <section className="container mx-auto px-4 py-10">
+    <section className="container mx-auto px-4 ">
       <div className=" px-4">
         {/* Ikony kolorowe */}
         <div className="flex justify-center gap-8 text-3xl">
