@@ -1,43 +1,32 @@
 "use client";
 import {useState} from "react";
-import { useUserCart } from "../../lib/useUserCart";
+import {useUserCart} from "../../lib/useUserCart";
+import {Product} from "../../types/globalTypes";
 
-type Variant = {
-  size: string;
-  sku: string;
-  stock: number;
-};
+interface ProductInfoProps {
+  product: Product;
+}
 
-type Product = {
-  _id: string;
-  title: string;
-  price: number;
-  currency?: string;
-  images?: string[];
-  variants?: Variant[];
-  slug?: string;
-};
-
-export default function ProductInfo({product}: {product: Product}) {
+const ProductInfo = ({product}: ProductInfoProps) => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [sizeError, setSizeError] = useState(false);
+
   const variants = product?.variants ?? [];
-  
-  const { addItem, isLoading } = useUserCart();
+
+  const {addItem, isLoading} = useUserCart();
 
   const handleAddToCart = async () => {
     if (isAdding || isLoading) return;
-    
+
     // Sprawdź czy rozmiar jest wymagany ale nie wybrany
     if (variants.length > 0 && !selectedSize) {
       setSizeError(true);
       setTimeout(() => setSizeError(false), 3000);
       return;
     }
-    
+
     setSizeError(false);
-    
     setIsAdding(true);
     try {
       const cartItem = {
@@ -48,9 +37,11 @@ export default function ProductInfo({product}: {product: Product}) {
         qty: 1,
         slug: product.slug || product._id,
         size: selectedSize || undefined,
-        sku: selectedSize ? variants.find(v => v.size === selectedSize)?.sku : undefined,
+        sku: selectedSize
+          ? variants.find((v) => v.size === selectedSize)?.sku
+          : undefined,
       };
-      
+
       await addItem(cartItem);
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -125,11 +116,13 @@ export default function ProductInfo({product}: {product: Product}) {
       <button
         type="button"
         onClick={handleAddToCart}
-        disabled={!!variants.length && !selectedSize || isAdding || isLoading}
+        disabled={(!!variants.length && !selectedSize) || isAdding || isLoading}
         className="w-full bg-black px-6 py-3 text-white hover:bg-black/90 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isAdding ? "Adding..." : "Add to cart"}
       </button>
     </div>
   );
-}
+};
+
+export default ProductInfo;

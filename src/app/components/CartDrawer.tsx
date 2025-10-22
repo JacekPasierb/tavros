@@ -10,13 +10,12 @@ import type {CartItem} from "@/store/cartStore";
 
 type CartLine = CartItem & {key: string};
 
-export default function CartDrawer({
-  open,
-  onClose,
-}: {
+interface CardDrawerProps {
   open: boolean;
   onClose: () => void;
-}) {
+}
+
+const CartDrawer = ({open, onClose}: CardDrawerProps) => {
   const {items, subtotal, updateItem, removeItem, isLoading} = useUserCart();
   const initialFocusRef = useRef<HTMLButtonElement>(null);
   const lastActiveRef = useRef<HTMLElement | null>(null);
@@ -91,13 +90,9 @@ export default function CartDrawer({
               ) : (
                 items.map((it: CartLine) => {
                   const imgSrc =
-                    // prefer single image
                     it.image ||
-                    // or first from images array
                     (Array.isArray(it.images) ? it.images[0] : undefined) ||
-                    // or heroImage
                     it.heroImage ||
-                    // fallback
                     "/placeholder.webp";
 
                   const mapKey =
@@ -206,7 +201,7 @@ export default function CartDrawer({
     </AnimatePresence>,
     document.body
   );
-}
+};
 
 function EmptyState() {
   return (
@@ -220,3 +215,5 @@ function EmptyState() {
     </div>
   );
 }
+
+export default CartDrawer;

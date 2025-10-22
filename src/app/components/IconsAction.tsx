@@ -2,6 +2,7 @@ import {Heart, ShoppingBag, User} from "lucide-react";
 import Link from "next/link";
 import React, {useState} from "react";
 import CartDrawer from "./CartDrawer";
+import {useUserCart} from "../../lib/useUserCart";
 
 const actions = [
   {href: "/account/myaccount", label: "My account", icon: User},
@@ -10,6 +11,8 @@ const actions = [
 
 const IconsAction = () => {
   const [open, setOpen] = useState(false);
+  const {totalItems} = useUserCart();
+  console.log("S", totalItems);
 
   return (
     <div className="flex gap-1 justify-self-end md:gap-4">
@@ -31,9 +34,18 @@ const IconsAction = () => {
       </ul>
       <button
         onClick={() => setOpen(true)}
-        className="relative   bg-white px-4 py-2 text-sm font-medium hover:cursor-pointer"
+        aria-label="Open cart"
+        className="relative grid h-9 w-9 place-items-center lg:h-12 lg:w-12"
       >
-        <ShoppingBag />
+        <ShoppingBag className="h-6 w-6" />
+        {totalItems > 0 && (
+          <span
+            aria-label={`${totalItems} items in cart`}
+            className="absolute -right-1 -top-1 rounded-full bg-black px-1.5 text-[10px] font-semibold text-white lg:text-xs"
+          >
+            {totalItems}
+          </span>
+        )}
       </button>
       <CartDrawer open={open} onClose={() => setOpen(false)} />
     </div>
